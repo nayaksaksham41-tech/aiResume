@@ -18,7 +18,11 @@
   async function parseErrorResponse(response) {
     try {
       const data = await response.json();
-      return data?.error || `Request failed with status ${response.status}`;
+      const err = data?.error;
+      if (typeof err === "string") return err;
+      if (err && typeof err === "object" && typeof err.message === "string") return err.message;
+      if (err != null && typeof err !== "object") return String(err);
+      return `Request failed with status ${response.status}`;
     } catch (_error) {
       return `Request failed with status ${response.status}`;
     }

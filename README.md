@@ -109,7 +109,7 @@ This repo targets Vercel with **`vercel.json`**, **`api/index.js`** (`serverless
 | Topic | Notes |
 |-------|--------|
 | **PDF** | Uses serverless Chromium on Vercel. Hobby tier **max duration is often 10s**; PDF generation may need a **Pro** plan or higher `maxDuration`. If it still fails, host on **Render** instead. |
-| **`vercel.json`** | Rewrites all routes to **`api/index.js`** (Express). Browser APIs use **`/svc/*`** (not `/api/*`) so Vercel does not treat them as separate functions under the `api/` folder. Function memory **1024 MB** and **maxDuration 60** (where your plan allows). |
+| **`vercel.json`** | Rewrites **`/(.*)` → `/api/$1`** so paths like **`/generate-resume`** reach **`api/[[...path]].js`** (Express). A **`VERCEL`** middleware strips the **`/api`** prefix so routes match **`server.js`**. Browser APIs use **`/svc/*`** (not `/api/*`). Memory **1024 MB**, **maxDuration 60** where allowed. |
 | **Data & sessions** | JSON + sessions use **`/tmp`** on Vercel (see [`services/dataRoot.js`](./services/dataRoot.js)). Instances don’t share disk — use **Render** or a **database** for reliability. |
 
 **Render / Linux without dev `puppeteer`:** set **`USE_SERVERLESS_CHROMIUM=true`** so PDFs use `@sparticuz/chromium` + `puppeteer-core`.

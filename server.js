@@ -18,6 +18,18 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
+/** Vercel rewrites /foo → /api/foo; Express routes stay /foo — strip the leading /api */
+if (process.env.VERCEL) {
+  app.use((req, _res, next) => {
+    let u = req.url || "/";
+    if (!u.startsWith("/api")) return next();
+    u = u.slice(4) || "/";
+    if (u.startsWith("?")) u = `/${u}`;
+    req.url = u;
+    next();
+  });
+}
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 app.use(express.json({ limit: "5mb" }));
