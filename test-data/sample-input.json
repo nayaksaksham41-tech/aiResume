@@ -1,0 +1,4 @@
+{
+  "job_description": "We are hiring a Backend Engineer with strong Node.js and Express experience. You should design REST APIs, optimize SQL queries, write unit tests, work with AWS, and collaborate with product and frontend teams. Experience with Docker, CI/CD, and performance tuning is preferred.",
+  "resume_text": "Rahul Mehta\nBackend Developer with 3 years of experience building APIs in Node.js and Express. Improved API response times by 35% and reduced server costs by 20% through query optimization and caching.\n\nExperience:\n- Built and maintained 20+ REST endpoints for e-commerce order and payment services.\n- Worked with PostgreSQL and Redis for data storage and caching.\n- Implemented Docker-based deployment and GitHub Actions pipelines.\n- Collaborated with cross-functional teams to ship features on time.\n\nSkills: Node.js, Express, PostgreSQL, Redis, Docker, AWS EC2, GitHub Actions, JavaScript\nEducation: B.Tech in Computer Science"
+}

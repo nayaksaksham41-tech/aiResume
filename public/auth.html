@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in — AI Resume Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      .auth-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .auth-tab {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+      }
+      .auth-tab.active {
+        background: rgba(110, 168, 254, 0.18);
+        border-color: rgba(110, 168, 254, 0.45);
+        color: var(--text);
+      }
+      .auth-form {
+        display: grid;
+        gap: 14px;
+        max-width: 420px;
+      }
+      .auth-actions {
+        margin-top: 8px;
+      }
+      .auth-footer {
+        margin-top: 18px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .auth-footer a {
+        color: var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page">
+      <section class="card" style="max-width: 480px; width: 100%">
+        <header class="header">
+          <p class="chip">Account</p>
+          <h1>Welcome</h1>
+          <p class="subtitle">Create an account or log in to generate tailored resumes.</p>
+        </header>
+
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab active" id="tabLogin" data-mode="login">Log in</button>
+          <button type="button" class="auth-tab" id="tabSignup" data-mode="signup">Sign up</button>
+        </div>
+
+        <form id="authForm" class="auth-form" autocomplete="on">
+          <div class="field">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autocomplete="email"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              minlength="8"
+              autocomplete="current-password"
+              placeholder="At least 8 characters"
+            />
+          </div>
+          <div class="auth-actions">
+            <button type="submit" class="generate-btn" id="submitBtn">
+              <span class="btn-text" id="submitLabel">Log in</span>
+              <span class="btn-glow"></span>
+            </button>
+          </div>
+        </form>
+
+        <p id="authStatus" class="status" aria-live="polite"></p>
+
+        <p class="auth-footer">
+          Passwords are stored hashed on the server. Use a unique password for this app.
+        </p>
+      </section>
+    </main>
+
+    <script src="./js/auth-ui.js" defer></script>
+  </body>
+</html>

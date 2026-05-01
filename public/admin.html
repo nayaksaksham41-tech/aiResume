@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — AI Resume Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page">
+      <section class="card admin-card">
+        <header class="header">
+          <div class="header-row">
+            <a class="back-link-inline" href="./index.html">← Home</a>
+            <div id="accountMount" class="account-mount hidden"></div>
+          </div>
+          <p class="chip">Administrator</p>
+          <h1>Users & resumes</h1>
+          <p class="subtitle">
+            Signed-up accounts and how many tailored resumes each user has generated (from stored history).
+          </p>
+        </header>
+
+        <div id="adminDenied" class="error-banner hidden"></div>
+
+        <div id="adminMain" class="hidden">
+          <div class="admin-toolbar">
+            <button type="button" id="btnRefresh" class="text-btn">Refresh</button>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table" aria-label="Users">
+              <thead>
+                <tr>
+                  <th scope="col">Email</th>
+                  <th scope="col">Joined</th>
+                  <th scope="col">Resumes</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersBody"></tbody>
+            </table>
+          </div>
+
+          <section id="historySection" class="admin-history-section hidden">
+            <h2 class="admin-history-heading">Resume history</h2>
+            <p id="historyUserLabel" class="admin-history-label"></p>
+            <div id="historyListAdmin" class="history-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="./js/account-menu.js" defer></script>
+    <script src="./js/admin-ui.js" defer></script>
+  </body>
+</html>

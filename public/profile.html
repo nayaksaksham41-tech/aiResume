@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile — AI Resume Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page">
+      <section class="card">
+        <header class="header">
+          <div class="header-row">
+            <a class="back-link-inline" href="./index.html">← Home</a>
+            <div id="accountMount" class="account-mount hidden"></div>
+          </div>
+          <p class="chip">Your profile</p>
+          <h1>Profile</h1>
+          <p class="subtitle">Saved locally on the server for your account (JSON file storage).</p>
+        </header>
+
+        <form id="profileForm" class="profile-form" autocomplete="on">
+          <div class="field">
+            <label for="displayName">Display name</label>
+            <input id="displayName" name="displayName" type="text" maxlength="120" placeholder="Your name" />
+          </div>
+          <div class="field">
+            <label for="headline">Professional headline</label>
+            <input id="headline" name="headline" type="text" maxlength="200" placeholder="e.g. Backend Engineer" />
+          </div>
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="text" maxlength="40" placeholder="Optional" />
+          </div>
+          <button type="submit" class="generate-btn">
+            <span class="btn-text">Save profile</span>
+            <span class="btn-glow"></span>
+          </button>
+        </form>
+
+        <p id="profileStatus" class="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="./js/account-menu.js" defer></script>
+    <script src="./js/profile-ui.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "name": "cva",
+  "version": "1.0.0",
+  "description": "Express backend for AI-powered resume generation",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"No tests configured\"",
+    "test:resume": "node scripts/testGenerateResume.js",
+    "test:resume:sample": "node scripts/testGenerateResume.js test-data/sample-input.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.15.2",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "docx": "^9.6.1",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "puppeteer": "^24.42.0",
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

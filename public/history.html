@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume history — AI Resume Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page">
+      <section class="card">
+        <header class="header">
+          <div class="header-row">
+            <a class="back-link-inline" href="./index.html">← Home</a>
+            <div id="accountMount" class="account-mount hidden"></div>
+          </div>
+          <p class="chip">Past generations</p>
+          <h1>Resume history</h1>
+          <p class="subtitle">
+            Each tailored resume you generate is stored under your account so you can reopen or download
+            later (saved as JSON files on the server).
+          </p>
+        </header>
+
+        <div id="historyEmpty" class="history-empty hidden">
+          No resumes yet. Generate one from the home page.
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </main>
+
+    <script src="./js/account-menu.js" defer></script>
+    <script src="./js/history-ui.js" defer></script>
+  </body>
+</html>

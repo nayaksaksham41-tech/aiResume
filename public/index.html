@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Resume Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page">
+      <section class="card">
+        <header class="header">
+          <div class="header-row">
+            <span class="header-row-spacer"></span>
+            <div id="accountMount" class="account-mount hidden"></div>
+          </div>
+          <p class="chip">AI Resume Studio</p>
+          <h1>Generate a tailored resume</h1>
+          <p class="subtitle">
+            Paste the job description and your resume. You’ll get an ATS-style score and can download
+            PDF or Word on the next screen.
+          </p>
+        </header>
+
+        <form id="resumeForm" class="form">
+          <div class="field">
+            <label for="jobDescription">Job Description</label>
+            <textarea
+              id="jobDescription"
+              name="job_description"
+              placeholder="Paste full job description here..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="resumeText">Resume Text</label>
+            <textarea
+              id="resumeText"
+              name="resume_text"
+              placeholder="Paste your complete resume text here..."
+              required
+            ></textarea>
+          </div>
+
+          <button id="generateBtn" type="submit" class="generate-btn">
+            <span class="btn-text">Generate Resume</span>
+            <span class="btn-glow"></span>
+          </button>
+        </form>
+
+        <p id="statusText" class="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <div id="loadingOverlay" class="loading-overlay hidden" aria-hidden="true">
+      <div class="loader-card">
+        <div class="loader"></div>
+        <p>Generating your resume...</p>
+      </div>
+    </div>
+
+    <script src="./js/account-menu.js" defer></script>
+    <script src="./js/generate-ui.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subscription — AI Resume Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page">
+      <section class="card">
+        <header class="header">
+          <div class="header-row">
+            <a class="back-link-inline" href="./index.html">← Home</a>
+            <div id="accountMount" class="account-mount hidden"></div>
+          </div>
+          <p class="chip">Billing</p>
+          <h1>Subscription</h1>
+          <p class="subtitle">Plan details are stored with your account (local JSON database).</p>
+        </header>
+
+        <div class="subscription-box">
+          <dl>
+            <div>
+              <dt>Plan</dt>
+              <dd id="planName">…</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd id="planStatus">…</dd>
+            </div>
+          </dl>
+          <p id="planNote" class="subscription-note"></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./js/account-menu.js" defer></script>
+    <script src="./js/subscription-ui.js" defer></script>
+  </body>
+</html>

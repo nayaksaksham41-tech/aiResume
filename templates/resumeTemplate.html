@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume</title>
+    <style>
+      body {
+        font-family: Calibri, Arial, Helvetica, sans-serif;
+        color: #111111;
+        line-height: 1.35;
+        margin: 0;
+        background: #ffffff;
+      }
+
+      .container {
+        max-width: 840px;
+        margin: 0 auto;
+        padding: 16px 18px 18px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 8px;
+      }
+
+      h1 {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+      }
+
+      .title {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: #333333;
+      }
+
+      .contact {
+        font-size: 12px;
+        margin-top: 2px;
+      }
+
+      section {
+        margin-top: 8px;
+      }
+
+      section h2 {
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid #222222;
+        letter-spacing: 0.6px;
+        margin-bottom: 6px;
+        padding-bottom: 2px;
+      }
+
+      .summary-text {
+        font-size: 12.5px;
+        text-align: justify;
+      }
+
+      .entry-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .entry {
+        margin-bottom: 5px;
+      }
+
+      .entry-left {
+        flex: 1;
+      }
+
+      .entry-right {
+        flex: 0 0 auto;
+        text-align: right;
+      }
+
+      .primary {
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+
+      .secondary {
+        font-size: 12px;
+        font-style: italic;
+      }
+
+      .right-primary,
+      .right-secondary {
+        font-size: 12px;
+        font-style: italic;
+      }
+
+      ul {
+        margin: 2px 0 0 20px;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 1px;
+        font-size: 12px;
+        line-height: 1.32;
+      }
+
+      .muted {
+        font-size: 12px;
+        font-style: italic;
+      }
+
+      .skills-line,
+      .certs-line {
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .project-desc {
+        margin: 2px 0 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>{{NAME}}</h1>
+        <p class="title">{{TITLE}}</p>
+        <p class="contact">{{CONTACT}}</p>
+      </header>
+
+      {{SUMMARY_SECTION}}
+      {{SKILLS_SECTION}}
+      {{EXPERIENCE_SECTION}}
+      {{EDUCATION_SECTION}}
+      {{PROJECTS_SECTION}}
+      {{CERTIFICATIONS_SECTION}}
+
+      <section style="display: none;">
+        <h2>Professional Summary</h2>
+        <p>{{SUMMARY}}</p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your resume — download</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="results-body">
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+
+    <main class="page results-page">
+      <section class="card results-card">
+        <header class="header">
+          <div class="header-row">
+            <a class="back-link-inline" href="./index.html">← Home</a>
+            <div id="accountMount" class="account-mount hidden"></div>
+          </div>
+          <p class="chip">Resume ready</p>
+          <h1>Download & ATS snapshot</h1>
+          <p class="subtitle">
+            Your tailored resume is ready. Pick PDF or Word below. The ATS score is an estimate based on
+            keyword overlap with the job description you pasted.
+          </p>
+        </header>
+
+        <div id="atsPanel" class="ats-panel hidden">
+          <div class="ats-score-ring-wrap">
+            <div id="atsScoreValue" class="ats-score-number" aria-live="polite">—</div>
+            <p class="ats-score-label">Estimated ATS match</p>
+          </div>
+          <div class="ats-meta">
+            <p id="atsKeywordsLine" class="ats-line"></p>
+            <p id="atsNote" class="ats-note"></p>
+            <div id="atsMissing" class="ats-missing hidden"></div>
+          </div>
+        </div>
+
+        <div id="errorBanner" class="error-banner hidden"></div>
+
+        <div id="downloadGrid" class="download-grid">
+          <article class="download-card">
+            <div class="download-icon pdf-icon" aria-hidden="true">PDF</div>
+            <h2>PDF</h2>
+            <p class="download-desc">Best for applications and printing. Layout matches our preview template.</p>
+            <button type="button" id="btnPdf" class="download-btn">Download PDF</button>
+          </article>
+          <article class="download-card">
+            <div class="download-icon docx-icon" aria-hidden="true">W</div>
+            <h2>Word</h2>
+            <p class="download-desc">
+              Editable .docx — open in Microsoft Word or Google Docs and tweak wording anytime.
+            </p>
+            <button type="button" id="btnDocx" class="download-btn secondary">Download Word</button>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./js/account-menu.js" defer></script>
+    <script src="./js/results-ui.js" defer></script>
+  </body>
+</html>
