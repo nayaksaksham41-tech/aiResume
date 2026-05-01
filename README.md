@@ -109,7 +109,7 @@ This repo targets Vercel with **`vercel.json`**, **`api/index.js`** (`serverless
 | Topic | Notes |
 |-------|--------|
 | **PDF** | Uses serverless Chromium on Vercel. Hobby tier **max duration is often 10s**; PDF generation may need a **Pro** plan or higher `maxDuration`. If it still fails, host on **Render** instead. |
-| **`vercel.json`** | Rewrites all routes to a **catch-all** `api/[[...path]].js` so paths like **`/api/auth/me`** hit Express (a plain `api/index.js` does not). Function memory **1024 MB** and **maxDuration 60** (where your plan allows). |
+| **`vercel.json`** | Rewrites all routes to **`api/index.js`** (Express). Browser APIs use **`/svc/*`** (not `/api/*`) so Vercel does not treat them as separate functions under the `api/` folder. Function memory **1024 MB** and **maxDuration 60** (where your plan allows). |
 | **Data & sessions** | JSON + sessions use **`/tmp`** on Vercel (see [`services/dataRoot.js`](./services/dataRoot.js)). Instances don’t share disk — use **Render** or a **database** for reliability. |
 
 **Render / Linux without dev `puppeteer`:** set **`USE_SERVERLESS_CHROMIUM=true`** so PDFs use `@sparticuz/chromium` + `puppeteer-core`.
@@ -133,10 +133,10 @@ Cloud hosts usually need `PUPPETEER_NO_SANDBOX=true` (already in `.env.example`)
 ## API overview
 
 - `POST /generate-resume` — JSON session + ATS (browser flow); `?format=pdf` for direct PDF.
-- `POST /api/auth/signup`, `/api/auth/login`, `GET /api/auth/me`
-- `GET /api/history`, profile, subscription — see routes under `routes/`.
+- `POST /svc/auth/signup`, `/svc/auth/login`, `GET /svc/auth/me`
+- `GET /svc/history`, profile, subscription — see routes under `routes/`.
 
-Admin (`nayaksaksham41@*` local part or `ADMIN_EMAIL`): `GET /api/admin/users`, etc.
+Admin (`nayaksaksham41@*` local part or `ADMIN_EMAIL`): `GET /svc/admin/users`, etc.
 
 ## License
 

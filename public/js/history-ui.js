@@ -21,8 +21,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const origin = window.location.origin;
 
   try {
-    const res = await fetch(`${origin}/api/history`, { credentials: "include", cache: "no-store" });
-    if (res.status === 401) {
+    const res = await fetch(`${origin}/svc/history`, { credentials: "include", cache: "no-store" });
+    if (res.status === 401 || res.status === 403 || res.status === 404) {
       window.location.href = `${origin}/auth.html`;
       return;
     }
@@ -51,8 +51,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
         <div class="history-card-actions">
           <a class="text-btn" href="/results.html?history=${encodeURIComponent(e.id)}">Open</a>
-          <a class="text-btn" href="${origin}/api/history/${encodeURIComponent(e.id)}/download/pdf">PDF</a>
-          <a class="text-btn" href="${origin}/api/history/${encodeURIComponent(e.id)}/download/docx">Word</a>
+          <a class="text-btn" href="${origin}/svc/history/${encodeURIComponent(e.id)}/download/pdf">PDF</a>
+          <a class="text-btn" href="${origin}/svc/history/${encodeURIComponent(e.id)}/download/docx">Word</a>
         </div>
       </article>`,
       )

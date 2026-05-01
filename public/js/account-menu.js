@@ -29,7 +29,7 @@
 
   async function logout() {
     try {
-      await fetch(`${window.location.origin}/api/auth/logout`, {
+      await fetch(`${window.location.origin}/svc/auth/logout`, {
         method: "POST",
         credentials: "include",
         cache: "no-store",
@@ -43,7 +43,7 @@
   async function boot() {
     let me;
     try {
-      me = await fetch(`${window.location.origin}/api/auth/me`, {
+      me = await fetch(`${window.location.origin}/svc/auth/me`, {
         credentials: "include",
         cache: "no-store",
       });
@@ -52,7 +52,7 @@
       return;
     }
 
-    if (me.status === 401) {
+    if (me.status !== 200) {
       window.location.href = `${window.location.origin}/auth.html`;
       return;
     }

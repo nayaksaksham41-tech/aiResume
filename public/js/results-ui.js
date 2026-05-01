@@ -91,12 +91,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const authRes = await fetch(`${origin}/api/auth/me`, {
+    const authRes = await fetch(`${origin}/svc/auth/me`, {
       credentials: "include",
       cache: "no-store",
     });
-    if (authRes.status === 401) {
+    if (authRes.status === 401 || authRes.status === 403 || authRes.status === 404) {
       window.location.href = `${origin}/auth.html`;
+      return;
+    }
+    if (!authRes.ok) {
+      showError("Could not verify your session. Try refreshing or signing in again.");
+      downloadGrid.classList.add("hidden");
       return;
     }
   } catch (_e) {
@@ -128,7 +133,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (!loadedAts && historyId) {
-      const res = await fetch(`${origin}/api/history/${encodeURIComponent(historyId)}`, {
+      const res = await fetch(`${origin}/svc/history/${encodeURIComponent(historyId)}`, {
         cache: "no-store",
         credentials: "include",
       });
@@ -163,7 +168,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         : { ok: false, status: 0 };
 
       if (!res.ok && historyId) {
-        url = `${origin}/api/history/${encodeURIComponent(historyId)}/download/pdf`;
+        url = `${origin}/svc/history/${encodeURIComponent(historyId)}/download/pdf`;
         res = await fetch(url, { cache: "no-store", credentials: "include" });
       }
 
@@ -191,7 +196,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         : { ok: false, status: 0 };
 
       if (!res.ok && historyId) {
-        url = `${origin}/api/history/${encodeURIComponent(historyId)}/download/docx`;
+        url = `${origin}/svc/history/${encodeURIComponent(historyId)}/download/docx`;
         res = await fetch(url, { cache: "no-store", credentials: "include" });
       }
 

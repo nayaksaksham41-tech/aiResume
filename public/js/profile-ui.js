@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const res = await fetch(`${origin}/api/profile`, { credentials: "include", cache: "no-store" });
-    if (res.status === 401) {
+    const res = await fetch(`${origin}/svc/profile`, { credentials: "include", cache: "no-store" });
+    if (res.status === 401 || res.status === 403 || res.status === 404) {
       window.location.href = `${origin}/auth.html`;
       return;
     }
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     setStatus("Saving…", "");
     try {
-      const res = await fetch(`${origin}/api/profile`, {
+      const res = await fetch(`${origin}/svc/profile`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         credentials: "include",

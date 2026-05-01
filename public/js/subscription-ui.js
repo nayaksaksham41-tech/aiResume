@@ -5,11 +5,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const noteEl = document.getElementById("planNote");
 
   try {
-    const res = await fetch(`${origin}/api/subscription`, {
+    const res = await fetch(`${origin}/svc/subscription`, {
       credentials: "include",
       cache: "no-store",
     });
-    if (res.status === 401) {
+    if (res.status === 401 || res.status === 403 || res.status === 404) {
       window.location.href = `${origin}/auth.html`;
       return;
     }

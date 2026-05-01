@@ -26,9 +26,10 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api", userDataRoutes);
+/** Use `/svc/*` (not `/api/*`) so Vercel does not treat URLs as separate serverless files under `/api`. */
+app.use("/svc/auth", authRoutes);
+app.use("/svc/admin", adminRoutes);
+app.use("/svc", userDataRoutes);
 app.use("/", resumeRoutes);
 
 app.use(

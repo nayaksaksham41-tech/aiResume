@@ -26,9 +26,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function gate() {
     try {
-      const me = await fetch(`${origin}/api/auth/me`, { credentials: "include", cache: "no-store" });
-      if (me.status === 401) {
+      const me = await fetch(`${origin}/svc/auth/me`, { credentials: "include", cache: "no-store" });
+      if (me.status === 401 || me.status === 403 || me.status === 404) {
         window.location.href = `${origin}/auth.html`;
+        return false;
+      }
+      if (!me.ok) {
+        denied.textContent = "Could not verify your session. Try again.";
+        denied.classList.remove("hidden");
         return false;
       }
       const data = await me.json();
@@ -45,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function loadUsers() {
-    const res = await fetch(`${origin}/api/admin/users`, {
+    const res = await fetch(`${origin}/svc/admin/users`, {
       credentials: "include",
       cache: "no-store",
     });
@@ -92,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     historyUserLabel.textContent = "Loading…";
     historySection.classList.remove("hidden");
 
-    const res = await fetch(`${origin}/api/admin/users/${encodeURIComponent(userId)}/history`, {
+    const res = await fetch(`${origin}/svc/admin/users/${encodeURIComponent(userId)}/history`, {
       credentials: "include",
       cache: "no-store",
     });
@@ -130,8 +135,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
         <div class="history-card-actions">
           <a class="text-btn" href="/results.html?history=${encodeURIComponent(e.id)}">Open</a>
-          <a class="text-btn" href="${origin}/api/history/${encodeURIComponent(e.id)}/download/pdf">PDF</a>
-          <a class="text-btn" href="${origin}/api/history/${encodeURIComponent(e.id)}/download/docx">Word</a>
+          <a class="text-btn" href="${origin}/svc/history/${encodeURIComponent(e.id)}/download/pdf">PDF</a>
+          <a class="text-btn" href="${origin}/svc/history/${encodeURIComponent(e.id)}/download/docx">Word</a>
         </div>
       </article>`,
       )

@@ -45,8 +45,8 @@ form.addEventListener("submit", async (e) => {
 
   const endpoint =
     mode === "login"
-      ? `${window.location.origin}/api/auth/login`
-      : `${window.location.origin}/api/auth/signup`;
+      ? `${window.location.origin}/svc/auth/login`
+      : `${window.location.origin}/svc/auth/signup`;
 
   submitBtn.disabled = true;
   setStatus(mode === "login" ? "Signing you in…" : "Creating your account…", "");
@@ -76,7 +76,7 @@ form.addEventListener("submit", async (e) => {
 (async function redirectIfAuthed() {
   if (window.location.protocol === "file:") return;
   try {
-    const r = await fetch(`${window.location.origin}/api/auth/me`, {
+    const r = await fetch(`${window.location.origin}/svc/auth/me`, {
       credentials: "include",
       cache: "no-store",
     });
