@@ -1,7 +1,14 @@
 const puppeteer = require("puppeteer");
 
 const launchArgs =
-  process.env.PUPPETEER_NO_SANDBOX === "true" ? ["--no-sandbox", "--disable-setuid-sandbox"] : [];
+  process.env.PUPPETEER_NO_SANDBOX === "true"
+    ? [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+      ]
+    : [];
 
 async function generatePdfBuffer(html) {
   const browser = await puppeteer.launch({

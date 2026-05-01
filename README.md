@@ -54,23 +54,45 @@ If you use SSH: `git@github.com:YOUR_USER/YOUR_REPO.git`
 
 Good fit for this stack: **Render** (free web service), **Railway**, **Fly.io** — all offer a free tier with limits (sleeps when idle, CPU/time caps).
 
-### Render (recommended starting point)
+### Render (free tier — step by step)
 
-1. Push the repo to GitHub (above).
-2. In [Render Dashboard](https://dashboard.render.com): **New → Web Service**, connect the repo.
-3. Settings:
-   - **Build command:** `npm install`
-   - **Start command:** `npm start`
-   - **Instance type:** Free
-4. **Environment** (paste from your local `.env`, but never commit them):
-   - `NODE_ENV` = `production`
-   - `JWT_SECRET` = long random string
-   - `PUPPETEER_NO_SANDBOX` = `true`
-   - Your AI keys (`OPENROUTER_API_KEY`, etc.)
-   - `OPENROUTER_HTTP_REFERER` = `https://<your-service>.onrender.com`
-5. Deploy. First PDF build may be slow while Puppeteer downloads Chromium.
+1. Sign up at [render.com](https://render.com) (GitHub login is easiest).
+2. **Dashboard → New + → Web Service** → **Connect** your GitHub repo (authorize Render if asked).
+3. Configure the service:
 
-Optional: this repo includes [`render.yaml`](./render.yaml) as a blueprint hint; you can still set env vars in the Render UI.
+   | Field | Value |
+   |--------|--------|
+   | **Name** | anything (e.g. `cva-resume`) |
+   | **Region** | closest to you |
+   | **Branch** | `main` |
+   | **Root directory** | *(leave empty)* |
+   | **Runtime** | `Node` |
+   | **Build command** | `npm install` |
+   | **Start command** | `npm start` |
+   | **Instance type** | **Free** |
+
+4. Under **Advanced**, set **Health check path** to `/health` (optional but recommended).
+5. Under **Environment**, add your secrets (never commit these to Git):
+
+   | Key | Value |
+   |-----|--------|
+   | `NODE_ENV` | `production` |
+   | `JWT_SECRET` | Long random string (32+ characters) |
+   | `PUPPETEER_NO_SANDBOX` | `true` |
+   | `AI_PROVIDER` | `openrouter` (or your provider) |
+   | `OPENROUTER_API_KEY` | your key |
+   | `OPENROUTER_MODEL` | e.g. `openai/gpt-4o-mini` |
+   | `OPENROUTER_HTTP_REFERER` | After deploy: `https://YOUR-SERVICE.onrender.com` (your exact URL) |
+   | `OPENROUTER_APP_NAME` | any label, e.g. `resume-api` |
+
+   Copy anything else you need from [`.env.example`](./.env.example) (Groq, Gemini, `ADMIN_EMAIL`, etc.).
+
+6. **Create Web Service.** First build may take several minutes (`npm install` + Puppeteer downloading Chromium).
+7. When status is **Live**, open your `.onrender.com` URL. Update **`OPENROUTER_HTTP_REFERER`** to match that URL, then **Save** (triggers redeploy). OpenRouter expects this referer.
+
+Optional: [`render.yaml`](./render.yaml) mirrors some of this; the dashboard is enough.
+
+**Cold starts:** Free Web Services sleep after idle time; the first request after sleep can take ~30–60 seconds.
 
 ### Important: data on free hosts
 
