@@ -94,6 +94,24 @@ Optional: [`render.yaml`](./render.yaml) mirrors some of this; the dashboard is 
 
 **Cold starts:** Free Web Services sleep after idle time; the first request after sleep can take ~30–60 seconds.
 
+### Vercel (serverless)
+
+This repo includes **`vercel.json`**, **`api/index.js`**, and a serverless wrapper so the Express app can run on Vercel. Import the GitHub repo in the [Vercel dashboard](https://vercel.com/new) (or run `npx vercel` from the project folder).
+
+1. **Import project** → select your repository → leave defaults (Root directory empty).
+2. **Environment variables** — add the same keys you would for production (`NODE_ENV`, `JWT_SECRET`, `OPENROUTER_*`, `PUPPETEER_NO_SANDBOX=true`, etc.). Vercel sets **`VERCEL=1`** automatically; do not add it manually.
+3. **Deploy.** Open your `.vercel.app` URL and set **`OPENROUTER_HTTP_REFERER`** to that URL.
+
+**Important limitations:**
+
+| Topic | Notes |
+|-------|--------|
+| **PDF / Puppeteer** | Chromium is large. Hobby deployments may hit **bundle size** or **timeout** limits (often **10s** max duration unless you upgrade). If builds fail or PDFs time out, prefer **Render** for this app or upgrade Vercel and raise function duration. |
+| **`vercel.json`** | Requests are rewritten to **`api/index.js`** via `serverless-http`. `maxDuration` is set to **60** (needs a plan that allows it). |
+| **Data & sessions** | On Vercel, JSON files and short-lived sessions use **`/tmp`** (`DATA_DIR` optional override via [`services/dataRoot.js`](./services/dataRoot.js)). **Different serverless instances do not share disk**, so signups/history can appear inconsistent under load. For a reliable single SQLite-like experience on one machine, use **Render** (or attach **Vercel Postgres / KV** later). |
+
+Local parity: running `npm start` still works; **`VERCEL`** is unset locally so sessions stay in memory unless you set `VERCEL=1` for testing.
+
 ### Important: data on free hosts
 
 User accounts and resume history are stored under `data/` **on the server disk**. On many free tiers the filesystem is **ephemeral** — data can be **lost on redeploy or sleep**. For production you’d move storage to a managed database or attached disk; for demos, expect to re-register after resets.

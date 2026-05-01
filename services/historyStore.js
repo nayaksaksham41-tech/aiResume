@@ -2,21 +2,30 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-const INDEX_PATH = path.join(__dirname, "..", "data", "resume_history.json");
-const ITEMS_DIR = path.join(__dirname, "..", "data", "history_items");
+const { getDataRoot } = require("./dataRoot");
+
+function indexPath() {
+  return path.join(getDataRoot(), "resume_history.json");
+}
+
+function itemsDir() {
+  return path.join(getDataRoot(), "history_items");
+}
 
 function ensureIndex() {
+  const INDEX_PATH = indexPath();
   const dir = path.dirname(INDEX_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   if (!fs.existsSync(INDEX_PATH)) {
     fs.writeFileSync(INDEX_PATH, JSON.stringify({ entries: [] }, null, 2), "utf8");
   }
+  fs.mkdirSync(itemsDir(), { recursive: true });
 }
 
 function loadIndex() {
   ensureIndex();
   try {
-    return JSON.parse(fs.readFileSync(INDEX_PATH, "utf8"));
+    return JSON.parse(fs.readFileSync(indexPath(), "utf8"));
   } catch (_e) {
     return { entries: [] };
   }
@@ -24,7 +33,7 @@ function loadIndex() {
 
 function saveIndex(data) {
   ensureIndex();
-  fs.writeFileSync(INDEX_PATH, JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(indexPath(), JSON.stringify(data, null, 2), "utf8");
 }
 
 /**
@@ -58,7 +67,7 @@ function appendEntry({ userId, resumeJson, html, job_description, resume_text, a
     atsScore,
   };
 
-  fs.writeFileSync(path.join(ITEMS_DIR, `${id}.json`), JSON.stringify(payload), "utf8");
+  fs.writeFileSync(path.join(itemsDir(), `${id}.json`), JSON.stringify(payload), "utf8");
 
   const db = loadIndex();
   db.entries.push(meta);
@@ -79,7 +88,7 @@ function findMetaByHistoryId(historyId) {
 }
 
 function readPayloadByHistoryId(historyId) {
-  const fp = path.join(ITEMS_DIR, `${historyId}.json`);
+  const fp = path.join(itemsDir(), `${historyId}.json`);
   if (!fs.existsSync(fp)) return null;
   try {
     return JSON.parse(fs.readFileSync(fp, "utf8"));

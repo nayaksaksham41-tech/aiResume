@@ -2,9 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-const DATA_PATH = path.join(__dirname, "..", "data", "users.json");
+const { getDataRoot } = require("./dataRoot");
+
+function usersPath() {
+  return path.join(getDataRoot(), "users.json");
+}
 
 function ensureFile() {
+  const DATA_PATH = usersPath();
   const dir = path.dirname(DATA_PATH);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -16,6 +21,7 @@ function ensureFile() {
 
 function load() {
   ensureFile();
+  const DATA_PATH = usersPath();
   const raw = fs.readFileSync(DATA_PATH, "utf8");
   try {
     return JSON.parse(raw);
@@ -26,7 +32,7 @@ function load() {
 
 function save(data) {
   ensureFile();
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(usersPath(), JSON.stringify(data, null, 2), "utf8");
 }
 
 /**

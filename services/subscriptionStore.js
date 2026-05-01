@@ -1,9 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 
-const DATA_PATH = path.join(__dirname, "..", "data", "subscriptions.json");
+const { getDataRoot } = require("./dataRoot");
+
+function subscriptionsPath() {
+  return path.join(getDataRoot(), "subscriptions.json");
+}
 
 function ensureFile() {
+  const DATA_PATH = subscriptionsPath();
   const dir = path.dirname(DATA_PATH);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   if (!fs.existsSync(DATA_PATH)) {
@@ -13,6 +18,7 @@ function ensureFile() {
 
 function load() {
   ensureFile();
+  const DATA_PATH = subscriptionsPath();
   try {
     return JSON.parse(fs.readFileSync(DATA_PATH, "utf8"));
   } catch (_e) {
@@ -22,7 +28,7 @@ function load() {
 
 function save(data) {
   ensureFile();
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(subscriptionsPath(), JSON.stringify(data, null, 2), "utf8");
 }
 
 /** Default: free plan (stored on first read/write). */
