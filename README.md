@@ -96,9 +96,9 @@ Optional: [`render.yaml`](./render.yaml) mirrors some of this; the dashboard is 
 
 ### Vercel (serverless)
 
-This repo targets Vercel with **`vercel.json`**, **`api/index.js`** (`serverless-http`), **`npm run build`** (bundle check only), and PDFs via **`puppeteer-core` + `@sparticuz/chromium`** when `VERCEL=1` (no huge bundled Chromium from `puppeteer` in production).
+This repo targets Vercel’s **native Express** integration: export **`server.js`** as the app (`module.exports = app`), **`npm run build`** (bundle check only), and PDFs via **`puppeteer-core` + `@sparticuz/chromium`** when `VERCEL=1`. Do **not** wrap the app in `serverless-http` or an `api/` entry — Vercel invokes Express with Node **`req`/`res`** (Lambda-style adapters break routing).
 
-1. **Import project** → select this repo → **Root directory:** empty → Framework: **Other** (or leave auto-detect).
+1. **Import project** → select this repo → **Root directory:** empty → Framework: **Express** (recommended) or leave **auto-detect** if it picks Express from dependencies.
 2. **Install Command** (Project → Settings → Build & Install): use **`npm install --omit=dev`** so Vercel skips the optional **`puppeteer`** devDependency and keeps the install small. (Local development should still run plain **`npm install`** so `puppeteer` is available on Windows/Mac.)
 3. **Build Command:** **`npm run build`** (already set in `package.json`).
 4. **Output Directory:** leave empty (not a static export).
@@ -109,7 +109,7 @@ This repo targets Vercel with **`vercel.json`**, **`api/index.js`** (`serverless
 | Topic | Notes |
 |-------|--------|
 | **PDF** | Uses serverless Chromium on Vercel. Hobby tier **max duration is often 10s**; PDF generation may need a **Pro** plan or higher `maxDuration`. If it still fails, host on **Render** instead. |
-| **`vercel.json`** | Rewrites **`/(.*)` → `/api/$1`** so paths like **`/generate-resume`** reach **`api/[[...path]].js`** (Express). A **`VERCEL`** middleware strips the **`/api`** prefix so routes match **`server.js`**. Browser APIs use **`/svc/*`** (not `/api/*`). Memory **1024 MB**, **maxDuration 60** where allowed. |
+| **`vercel.json`** | **`functions.server.js`** for **maxDuration** / memory where supported (set **Framework → Express** in the Vercel project UI — not a `vercel.json` field). No URL rewrites — **`POST /generate-resume`** and **`/svc/*`** hit **`server.js`** directly. Browser APIs use **`/svc/*`** so **`/api`** stays reserved for Vercel’s filesystem. |
 | **Data & sessions** | JSON + sessions use **`/tmp`** on Vercel (see [`services/dataRoot.js`](./services/dataRoot.js)). Instances don’t share disk — use **Render** or a **database** for reliability. |
 
 **Render / Linux without dev `puppeteer`:** set **`USE_SERVERLESS_CHROMIUM=true`** so PDFs use `@sparticuz/chromium` + `puppeteer-core`.
