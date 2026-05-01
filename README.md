@@ -96,21 +96,23 @@ Optional: [`render.yaml`](./render.yaml) mirrors some of this; the dashboard is 
 
 ### Vercel (serverless)
 
-This repo includes **`vercel.json`**, **`api/index.js`**, and a serverless wrapper so the Express app can run on Vercel. Import the GitHub repo in the [Vercel dashboard](https://vercel.com/new) (or run `npx vercel` from the project folder).
+This repo targets Vercel with **`vercel.json`**, **`api/index.js`** (`serverless-http`), **`npm run build`** (bundle check only), and PDFs via **`puppeteer-core` + `@sparticuz/chromium`** when `VERCEL=1` (no huge bundled Chromium from `puppeteer` in production).
 
-1. **Import project** → select your repository → leave defaults (Root directory empty).
-2. **Environment variables** — add the same keys you would for production (`NODE_ENV`, `JWT_SECRET`, `OPENROUTER_*`, `PUPPETEER_NO_SANDBOX=true`, etc.). Vercel sets **`VERCEL=1`** automatically; do not add it manually.
-3. **Deploy.** Open your `.vercel.app` URL and set **`OPENROUTER_HTTP_REFERER`** to that URL.
+1. **Import project** → select this repo → **Root directory:** empty → Framework: **Other** (or leave auto-detect).
+2. **Install Command** (Project → Settings → Build & Install): use **`npm install --omit=dev`** so Vercel skips the optional **`puppeteer`** devDependency and keeps the install small. (Local development should still run plain **`npm install`** so `puppeteer` is available on Windows/Mac.)
+3. **Build Command:** **`npm run build`** (already set in `package.json`).
+4. **Output Directory:** leave empty (not a static export).
+5. **Environment variables** — same as production (`NODE_ENV`, `JWT_SECRET`, `OPENROUTER_*`, `PUPPETEER_NO_SANDBOX=true`, …). Vercel sets **`VERCEL=1`** automatically.
 
 **Important limitations:**
 
 | Topic | Notes |
 |-------|--------|
-| **PDF / Puppeteer** | Chromium is large. Hobby deployments may hit **bundle size** or **timeout** limits (often **10s** max duration unless you upgrade). If builds fail or PDFs time out, prefer **Render** for this app or upgrade Vercel and raise function duration. |
-| **`vercel.json`** | Requests are rewritten to **`api/index.js`** via `serverless-http`. `maxDuration` is set to **60** (needs a plan that allows it). |
-| **Data & sessions** | On Vercel, JSON files and short-lived sessions use **`/tmp`** (`DATA_DIR` optional override via [`services/dataRoot.js`](./services/dataRoot.js)). **Different serverless instances do not share disk**, so signups/history can appear inconsistent under load. For a reliable single SQLite-like experience on one machine, use **Render** (or attach **Vercel Postgres / KV** later). |
+| **PDF** | Uses serverless Chromium on Vercel. Hobby tier **max duration is often 10s**; PDF generation may need a **Pro** plan or higher `maxDuration`. If it still fails, host on **Render** instead. |
+| **`vercel.json`** | Rewrites all routes to **`api/index.js`**; function memory **1024 MB** and **maxDuration 60** (requires a plan that supports these limits). |
+| **Data & sessions** | JSON + sessions use **`/tmp`** on Vercel (see [`services/dataRoot.js`](./services/dataRoot.js)). Instances don’t share disk — use **Render** or a **database** for reliability. |
 
-Local parity: running `npm start` still works; **`VERCEL`** is unset locally so sessions stay in memory unless you set `VERCEL=1` for testing.
+**Render / Linux without dev `puppeteer`:** set **`USE_SERVERLESS_CHROMIUM=true`** so PDFs use `@sparticuz/chromium` + `puppeteer-core`.
 
 ### Important: data on free hosts
 

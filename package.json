@@ -4,6 +4,7 @@
   "description": "Express backend for AI-powered resume generation",
   "main": "server.js",
   "scripts": {
+    "build": "node scripts/vercel-build-verify.js",
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test": "echo \"No tests configured\"",
@@ -23,14 +24,16 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "docx": "^9.6.1",
+    "@sparticuz/chromium": "^148.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "puppeteer": "^24.42.0",
+    "puppeteer-core": "^24.42.0",
     "serverless-http": "^3.2.0",
     "zod": "^4.4.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "puppeteer": "^24.42.0"
   }
 }
