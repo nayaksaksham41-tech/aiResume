@@ -1,0 +1,6 @@
+# Railway (https://docs.railway.com/deploy/config-as-code)
+# New Project → Deploy from GitHub → set Variables (same as .env.example).
+# Nixpacks runs `npm install` and uses package.json "start" by default; this locks the start command.
+
+[deploy]
+startCommand = "npm start"

@@ -50,9 +50,13 @@ Copy from [`.env.example`](./.env.example). Never commit `.env` or API keys.
 
 If you use SSH: `git@github.com:YOUR_USER/YOUR_REPO.git`
 
-## Free deployment (example: Render)
+## Hosting (recommended: Render or Railway)
 
-Good fit for this stack: **Render** (free web service), **Railway**, **Fly.io** — all offer a free tier with limits (sleeps when idle, CPU/time caps).
+For a **real Express backend**, prefer **Render** or **Railway**: one long‑running **`npm start`** process — routing, auth cookies, and **`public/`** assets behave like **localhost**. No Vercel‑specific routing.
+
+**Vercel** is optional: serverless Express works but has stricter limits (PDF runtime, ephemeral `/tmp` data). Use it only if you explicitly want serverless.
+
+Good fits with free/low tiers: **Render**, **Railway**, **Fly.io** (cold starts / caps vary).
 
 ### Render (free tier — step by step)
 
@@ -90,16 +94,25 @@ Good fit for this stack: **Render** (free web service), **Railway**, **Fly.io** 
 6. **Create Web Service.** First build may take several minutes (`npm install` + Puppeteer downloading Chromium).
 7. When status is **Live**, open your `.onrender.com` URL. Update **`OPENROUTER_HTTP_REFERER`** to match that URL, then **Save** (triggers redeploy). OpenRouter expects this referer.
 
-Optional: [`render.yaml`](./render.yaml) mirrors some of this; the dashboard is enough.
+Optional: [`render.yaml`](./render.yaml) defines the web service, **`/health`**, and non-secret env; add secrets in the Render dashboard.
 
 **Cold starts:** Free Web Services sleep after idle time; the first request after sleep can take ~30–60 seconds.
 
-### Vercel (serverless)
+### Railway
+
+Same idea as Render: deploy the repo as a **Node** web service. The repo includes [`railway.toml`](./railway.toml) with **`npm start`**.
+
+1. [railway.app](https://railway.app) → **New project** → **Deploy from GitHub** → pick this repo.
+2. Nixpacks will **`npm install`**; start command is **`npm start`** (from `railway.toml` / `package.json`).
+3. **Variables** tab: add the **same keys** as in the Render table (`NODE_ENV`, `JWT_SECRET`, OpenRouter keys, `PUPPETEER_NO_SANDBOX=true`). Set **`OPENROUTER_HTTP_REFERER`** to your Railway **public URL** after you create it.
+4. **Settings → Networking → Generate domain**, open the URL, then fix **`OPENROUTER_HTTP_REFERER`** if needed and redeploy.
+
+### Vercel (serverless, optional)
 
 This repo targets Vercel’s **native Express** integration: export **`server.js`** as the app (`module.exports = app`), **`npm run build`** (bundle check only), and PDFs via **`puppeteer-core` + `@sparticuz/chromium`** when `VERCEL=1`. Do **not** wrap the app in `serverless-http` or an `api/` entry — Vercel invokes Express with Node **`req`/`res`** (Lambda-style adapters break routing).
 
-1. **Import project** → select this repo → **Root directory:** empty → Framework: **Express** (recommended) or leave **auto-detect** if it picks Express from dependencies.
-2. **Install Command** (Project → Settings → Build & Install): use **`npm install --omit=dev`** so Vercel skips the optional **`puppeteer`** devDependency and keeps the install small. (Local development should still run plain **`npm install`** so `puppeteer` is available on Windows/Mac.)
+1. **Import project** → select this repo → **Root directory:** empty. After import, open **Project → Settings → Build and Deployment** (not “General”) and set **Framework Preset** to **Express** if it isn’t already. (Vercel often auto-detects it from the `express` dependency.)
+2. **Install Command** (same **Build and Deployment** page): use **`npm install --omit=dev`** so Vercel skips the optional **`puppeteer`** devDependency and keeps the install small. (Local development should still run plain **`npm install`** so `puppeteer` is available on Windows/Mac.)
 3. **Build Command:** **`npm run build`** (already set in `package.json`).
 4. **Output Directory:** leave empty (not a static export).
 5. **Environment variables** — same as production (`NODE_ENV`, `JWT_SECRET`, `OPENROUTER_*`, `PUPPETEER_NO_SANDBOX=true`, …). Vercel sets **`VERCEL=1`** automatically.
@@ -109,7 +122,7 @@ This repo targets Vercel’s **native Express** integration: export **`server.js
 | Topic | Notes |
 |-------|--------|
 | **PDF** | Uses serverless Chromium on Vercel. Hobby tier **max duration is often 10s**; PDF generation may need a **Pro** plan or higher `maxDuration`. If it still fails, host on **Render** instead. |
-| **`vercel.json`** | **`functions.server.js`** for **maxDuration** / memory where supported (set **Framework → Express** in the Vercel project UI — not a `vercel.json` field). No URL rewrites — **`POST /generate-resume`** and **`/svc/*`** hit **`server.js`** directly. Browser APIs use **`/svc/*`** so **`/api`** stays reserved for Vercel’s filesystem. |
+| **`vercel.json`** | **`functions.server.js`** for **maxDuration** / memory where supported. Set **Framework Preset** under **Settings → Build and Deployment** (not in `vercel.json`). No URL rewrites — **`POST /generate-resume`** and **`/svc/*`** hit **`server.js`** directly. Browser APIs use **`/svc/*`** so **`/api`** stays reserved for Vercel’s filesystem. |
 | **Data & sessions** | JSON + sessions use **`/tmp`** on Vercel (see [`services/dataRoot.js`](./services/dataRoot.js)). Instances don’t share disk — use **Render** or a **database** for reliability. |
 
 **Render / Linux without dev `puppeteer`:** set **`USE_SERVERLESS_CHROMIUM=true`** so PDFs use `@sparticuz/chromium` + `puppeteer-core`.

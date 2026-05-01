@@ -1,5 +1,5 @@
-# Optional: Render.com Blueprint (https://render.com)
-# After connecting this repo, Render can read this file or you can set the same in the dashboard.
+# Optional: Render.com Blueprint (https://render.com/docs/infrastructure-as-code)
+# New Blueprint → connect repo → Render reads this file.
 services:
   - type: web
     name: cva-resume
@@ -7,10 +7,11 @@ services:
     buildCommand: npm install
     startCommand: npm start
     plan: free
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PUPPETEER_NO_SANDBOX
-        value: true
-    # Set in the Render dashboard (never commit real values):
-    # JWT_SECRET, OPENROUTER_API_KEY (or other AI keys), OPENROUTER_HTTP_REFERER = your public URL
+        value: "true"
+    # Add in dashboard after first deploy (do not commit secrets):
+    # JWT_SECRET, OPENROUTER_API_KEY, OPENROUTER_MODEL, OPENROUTER_HTTP_REFERER (your https URL), etc.
