@@ -38,18 +38,40 @@ function saveToFile(data) {
   fs.writeFileSync(usersPath(), JSON.stringify(data, null, 2), "utf8");
 }
 
+function normalizeRedisUsers(raw) {
+  if (raw == null) return null;
+  let obj = raw;
+  if (typeof raw === "string") {
+    try {
+      obj = JSON.parse(raw);
+    } catch (_e) {
+      return null;
+    }
+  }
+  if (obj && typeof obj === "object" && Array.isArray(obj.users)) return obj;
+  return null;
+}
+
 async function load() {
   const redis = getRedisClient();
   if (!redis) return loadFromFile();
 
   try {
-    const data = await redis.get(USERS_CACHE_KEY);
-    if (data && Array.isArray(data.users)) return data;
-    const initial = { users: [] };
-    await redis.set(USERS_CACHE_KEY, initial);
-    return initial;
-  } catch (_e) {
-    // Fallback for local/dev or transient Redis issues.
+    const raw = await redis.get(USERS_CACHE_KEY);
+    /** Key missing → seed empty DB once. Do not overwrite Redis with [] when payload is merely string/shape mismatched — that erased real users before. */
+    if (raw === null || raw === undefined) {
+      const initial = { users: [] };
+      await redis.set(USERS_CACHE_KEY, JSON.stringify(initial));
+      return initial;
+    }
+
+    const normalized = normalizeRedisUsers(raw);
+    if (normalized) return normalized;
+
+    console.error("[userStore] Redis cva:users:v1 payload invalid; refusing to wipe. Returning empty until next save fixes key.");
+    return { users: [] };
+  } catch (e) {
+    console.error("[userStore] Redis load failed:", e?.message || e);
     return loadFromFile();
   }
 }
@@ -61,7 +83,7 @@ async function save(data) {
     return;
   }
   try {
-    await redis.set(USERS_CACHE_KEY, data);
+    await redis.set(USERS_CACHE_KEY, JSON.stringify(data));
   } catch (_e) {
     saveToFile(data);
   }
