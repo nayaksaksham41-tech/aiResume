@@ -3,6 +3,20 @@ const path = require("path");
 const crypto = require("crypto");
 
 const { getDataRoot } = require("./dataRoot");
+const { Redis } = require("@upstash/redis");
+
+const USERS_CACHE_KEY = "cva:users:v1";
+
+let redisClient = null;
+
+function getRedisClient() {
+  if (redisClient) return redisClient;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  redisClient = new Redis({ url, token });
+  return redisClient;
+}
 
 function usersPath() {
   return path.join(getDataRoot(), "users.json");
@@ -19,7 +33,7 @@ function ensureFile() {
   }
 }
 
-function load() {
+function loadFromFile() {
   ensureFile();
   const DATA_PATH = usersPath();
   const raw = fs.readFileSync(DATA_PATH, "utf8");
@@ -30,17 +44,46 @@ function load() {
   }
 }
 
-function save(data) {
+function saveToFile(data) {
   ensureFile();
   fs.writeFileSync(usersPath(), JSON.stringify(data, null, 2), "utf8");
+}
+
+async function load() {
+  const redis = getRedisClient();
+  if (!redis) return loadFromFile();
+
+  try {
+    const data = await redis.get(USERS_CACHE_KEY);
+    if (data && Array.isArray(data.users)) return data;
+    const initial = { users: [] };
+    await redis.set(USERS_CACHE_KEY, initial);
+    return initial;
+  } catch (_e) {
+    // Fallback for local/dev or transient Redis issues.
+    return loadFromFile();
+  }
+}
+
+async function save(data) {
+  const redis = getRedisClient();
+  if (!redis) {
+    saveToFile(data);
+    return;
+  }
+  try {
+    await redis.set(USERS_CACHE_KEY, data);
+  } catch (_e) {
+    saveToFile(data);
+  }
 }
 
 /**
  * File-based user store (JSON). Fine for a single-process dev/small deploy.
  * Password hashes only — never store plaintext passwords.
  */
-function createUser({ email, passwordHash }) {
-  const db = load();
+async function createUser({ email, passwordHash }) {
+  const db = await load();
   const user = {
     id: crypto.randomUUID(),
     email,
@@ -48,23 +91,23 @@ function createUser({ email, passwordHash }) {
     createdAt: new Date().toISOString(),
   };
   db.users.push(user);
-  save(db);
+  await save(db);
   return { id: user.id, email: user.email, createdAt: user.createdAt };
 }
 
-function findByEmail(email) {
-  const db = load();
+async function findByEmail(email) {
+  const db = await load();
   return db.users.find((u) => u.email === email) || null;
 }
 
-function findById(id) {
-  const db = load();
+async function findById(id) {
+  const db = await load();
   return db.users.find((u) => u.id === id) || null;
 }
 
 /** Public fields only — never expose passwordHash. */
-function listUsers() {
-  const db = load();
+async function listUsers() {
+  const db = await load();
   return db.users.map((u) => ({
     id: u.id,
     email: u.email,

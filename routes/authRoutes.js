@@ -28,7 +28,7 @@ function publicUser(user) {
   return { id: user.id, email: user.email };
 }
 
-router.post("/signup", (req, res, next) => {
+router.post("/signup", async (req, res, next) => {
   try {
     const parsed = credentialsSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -37,12 +37,12 @@ router.post("/signup", (req, res, next) => {
     const email = parsed.data.email.trim().toLowerCase();
     const { password } = parsed.data;
 
-    if (userStore.findByEmail(email)) {
+    if (await userStore.findByEmail(email)) {
       throw new AppError("An account with this email already exists.", 409);
     }
 
     const passwordHash = bcrypt.hashSync(password, 12);
-    const user = userStore.createUser({ email, passwordHash });
+    const user = await userStore.createUser({ email, passwordHash });
     let token;
     try {
       token = signToken(user);
@@ -65,7 +65,7 @@ router.post("/signup", (req, res, next) => {
   }
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   try {
     const parsed = credentialsSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -74,7 +74,7 @@ router.post("/login", (req, res, next) => {
     const email = parsed.data.email.trim().toLowerCase();
     const { password } = parsed.data;
 
-    const row = userStore.findByEmail(email);
+    const row = await userStore.findByEmail(email);
     let passwordMatches = false;
     if (row && typeof row.passwordHash === "string" && row.passwordHash.length > 0) {
       try {
