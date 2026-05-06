@@ -10,6 +10,7 @@ const sessionStore = require("../services/sessionStore");
 const historyStore = require("../services/historyStore");
 const { AppError } = require("../middleware/errorHandler");
 const { requireAuth } = require("../middleware/authMiddleware");
+const quotaService = require("../services/quotaService");
 
 const router = express.Router();
 
@@ -28,11 +29,14 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
     const { job_description, resume_text } = parsed.data;
     const streamFormat = String(req.query.format || "").toLowerCase();
 
+    await quotaService.assertCanGenerateResume(req.user);
+
     const resumeJson = await generateResumeJson({ job_description, resume_text });
     const html = await buildResumeHtml(resumeJson);
 
     if (streamFormat === "pdf") {
       const pdfBuffer = await generatePdfBuffer(html);
+      await quotaService.recordSuccessfulGeneration(req.user);
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", 'attachment; filename="resume.pdf"');
       res.status(200).send(pdfBuffer);
@@ -40,6 +44,7 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
     }
 
     if (streamFormat === "html") {
+      await quotaService.recordSuccessfulGeneration(req.user);
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.setHeader("Content-Disposition", 'attachment; filename="resume-editable.html"');
       res.status(200).send(html);
@@ -69,6 +74,8 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
     } catch (e) {
       console.error("history append failed:", e);
     }
+
+    await quotaService.recordSuccessfulGeneration(req.user);
 
     res.status(200).json({
       sessionId,

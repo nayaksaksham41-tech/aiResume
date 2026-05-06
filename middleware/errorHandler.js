@@ -1,7 +1,8 @@
 class AppError extends Error {
-  constructor(message, statusCode = 500) {
+  constructor(message, statusCode = 500, code = undefined) {
     super(message);
     this.statusCode = statusCode;
+    this.code = code;
   }
 }
 
@@ -18,7 +19,9 @@ const errorHandler = (err, _req, res, _next) => {
     console.error("Unhandled error:", err);
   }
 
-  res.status(statusCode).json({ error: message });
+  const body = { error: message };
+  if (err.code) body.code = err.code;
+  res.status(statusCode).json(body);
 };
 
 module.exports = { AppError, notFoundHandler, errorHandler };

@@ -116,6 +116,11 @@
         credentials: "include",
       });
 
+      if (response.status === 402) {
+        window.location.href = `${window.location.origin}/subscription.html`;
+        return;
+      }
+
       if (response.status === 401 || response.status === 403 || response.status === 404) {
         window.location.href = `${window.location.origin}/auth.html`;
         return;

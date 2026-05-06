@@ -874,6 +874,131 @@ input:focus {
   line-height: 1.5;
 }
 
+.subscription-page-card {
+  width: min(980px, 100%);
+}
+
+.subscription-box-wide {
+  max-width: none;
+  width: 100%;
+}
+
+.subscription-current-heading {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.subscription-account-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px 20px;
+}
+
+.subscription-offers {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.subscription-offers-heading {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.subscription-offers-intro {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 640px;
+}
+
+.subscription-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.subscription-plan-card {
+  position: relative;
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(155deg, rgba(110, 168, 254, 0.12), rgba(16, 24, 39, 0.6));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.subscription-plan-card-secondary {
+  background: linear-gradient(155deg, rgba(143, 107, 255, 0.1), rgba(16, 24, 39, 0.6));
+}
+
+.subscription-plan-highlight {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+  background: rgba(110, 168, 254, 0.15);
+  border: 1px solid rgba(110, 168, 254, 0.35);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.subscription-plan-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  padding-right: 88px;
+}
+
+.subscription-plan-price {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.subscription-inr {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--muted);
+  vertical-align: top;
+}
+
+.subscription-plan-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.subscription-plan-list li {
+  margin-bottom: 6px;
+}
+
+.subscription-plan-card .subscription-plan-btn {
+  margin-top: auto;
+}
+
+.subscription-downgrade-btn {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
 .admin-card {
   width: min(1040px, 100%);
 }

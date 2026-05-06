@@ -6,6 +6,7 @@ const { AppError } = require("../middleware/errorHandler");
 const { isAdminEmail } = require("../services/adminService");
 const profileStore = require("../services/profileStore");
 const subscriptionStore = require("../services/subscriptionStore");
+const quotaService = require("../services/quotaService");
 const historyStore = require("../services/historyStore");
 const { generatePdfBuffer } = require("../services/pdfService");
 const { generateDocxBuffer } = require("../services/docxService");
@@ -15,6 +16,10 @@ const router = express.Router();
 const profilePatchSchema = z.object({
   phone: z.string().max(40).optional(),
   linkedinUrl: z.string().max(500).optional(),
+});
+
+const subscriptionStubPatchSchema = z.object({
+  plan: z.enum(["free", "pro_1m", "pro_3m"]),
 });
 
 router.get("/profile", requireAuth, (req, res) => {
@@ -35,9 +40,57 @@ router.patch("/profile", requireAuth, (req, res, next) => {
   }
 });
 
-router.get("/subscription", requireAuth, (req, res) => {
-  const subscription = subscriptionStore.getSubscription(req.user.id);
-  res.json({ subscription });
+router.get("/subscription", requireAuth, async (req, res, next) => {
+  try {
+    const payload = await quotaService.buildAccountQuotaPayload(req.user);
+    res.json(payload);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.patch("/subscription", requireAuth, async (req, res, next) => {
+  try {
+    if (process.env.SUBSCRIPTION_STUB !== "true") {
+      throw new AppError(
+        "Payment is not wired yet. Upgrade options are shown here for reference only.",
+        403,
+      );
+    }
+
+    const parsed = subscriptionStubPatchSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.issues[0]?.message || "Invalid input", 400);
+    }
+
+    const { plan } = parsed.data;
+    let expiresAt = null;
+    let renewsAt = null;
+
+    if (plan === "pro_1m") {
+      const d = new Date();
+      d.setMonth(d.getMonth() + 1);
+      expiresAt = d.toISOString();
+      renewsAt = expiresAt;
+    } else if (plan === "pro_3m") {
+      const d = new Date();
+      d.setMonth(d.getMonth() + 3);
+      expiresAt = d.toISOString();
+      renewsAt = expiresAt;
+    }
+
+    await subscriptionStore.setSubscription(req.user.id, {
+      plan,
+      status: "active",
+      expiresAt,
+      renewsAt,
+    });
+
+    const payload = await quotaService.buildAccountQuotaPayload(req.user);
+    res.json(payload);
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.get("/history", requireAuth, async (req, res, next) => {

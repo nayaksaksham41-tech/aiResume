@@ -18,7 +18,7 @@
     <div class="bg-blur bg-blur-2"></div>
 
     <main class="page">
-      <section class="card">
+      <section class="card subscription-page-card">
         <header class="header">
           <div class="header-row">
             <a class="app-logo" href="./index.html" aria-label="SN Algora AI — Home">
@@ -27,13 +27,17 @@
             </a>
             <div id="accountMount" class="account-mount hidden"></div>
           </div>
-          <p class="chip">Billing</p>
+          <p class="chip">Pro plans</p>
           <h1>Subscription</h1>
-          <p class="subtitle">Plan details are stored with your account (local JSON database).</p>
+          <p class="subtitle">
+            Free accounts can create 2 resumes per rolling 24 hours. Upgrade to Pro for higher daily
+            limits for the length of your plan.
+          </p>
         </header>
 
-        <div class="subscription-box">
-          <dl>
+        <div class="subscription-box subscription-box-wide">
+          <h2 class="subscription-current-heading">Your account</h2>
+          <dl class="subscription-account-dl">
             <div>
               <dt>Plan</dt>
               <dd id="planName">…</dd>
@@ -42,9 +46,55 @@
               <dt>Status</dt>
               <dd id="planStatus">…</dd>
             </div>
+            <div>
+              <dt>24h usage</dt>
+              <dd id="planUsage">…</dd>
+            </div>
           </dl>
           <p id="planNote" class="subscription-note"></p>
         </div>
+
+        <section class="subscription-offers" aria-labelledby="offersHeading">
+          <h2 id="offersHeading" class="subscription-offers-heading">Choose Pro</h2>
+          <p class="subscription-offers-intro">
+            Limits apply per rolling 24 hours while your plan is active. Payment checkout can be
+            connected later; for local testing you can enable server stub mode.
+          </p>
+          <div class="subscription-plan-grid">
+            <article class="subscription-plan-card">
+              <div class="subscription-plan-highlight">Popular</div>
+              <h3 class="subscription-plan-title">Pro — 1 month</h3>
+              <p class="subscription-plan-price"><span class="subscription-inr">₹</span>199</p>
+              <ul class="subscription-plan-list">
+                <li><strong>10</strong> resume generations per day</li>
+                <li>Access window: <strong>1 month</strong></li>
+                <li>Full PDF & Word export flow</li>
+              </ul>
+              <button type="button" class="generate-btn subscription-plan-btn" data-plan="pro_1m">
+                Select ₹199 plan
+              </button>
+            </article>
+            <article class="subscription-plan-card subscription-plan-card-secondary">
+              <h3 class="subscription-plan-title">Pro — 3 months</h3>
+              <p class="subscription-plan-price"><span class="subscription-inr">₹</span>499</p>
+              <ul class="subscription-plan-list">
+                <li><strong>12</strong> resume generations per day</li>
+                <li>Access window: <strong>3 months</strong></li>
+                <li>Full PDF & Word export flow</li>
+              </ul>
+              <button type="button" class="generate-btn subscription-plan-btn" data-plan="pro_3m">
+                Select ₹499 plan
+              </button>
+            </article>
+          </div>
+          <button
+            type="button"
+            class="text-btn subscription-downgrade-btn"
+            id="downgradeFreeBtn"
+          >
+            Use free tier (2/day rolling)
+          </button>
+        </section>
       </section>
     </main>
 
