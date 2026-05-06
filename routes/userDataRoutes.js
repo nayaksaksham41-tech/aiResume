@@ -13,9 +13,8 @@ const { generateDocxBuffer } = require("../services/docxService");
 const router = express.Router();
 
 const profilePatchSchema = z.object({
-  displayName: z.string().max(120).optional(),
-  headline: z.string().max(200).optional(),
   phone: z.string().max(40).optional(),
+  linkedinUrl: z.string().max(500).optional(),
 });
 
 router.get("/profile", requireAuth, (req, res) => {

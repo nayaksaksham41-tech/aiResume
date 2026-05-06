@@ -18,6 +18,27 @@ function setMode(next) {
 tabLogin.addEventListener("click", () => setMode("login"));
 tabSignup.addEventListener("click", () => setMode("signup"));
 
+(function initPasswordToggle() {
+  const pwd = document.getElementById("password");
+  const btn = document.getElementById("passwordToggle");
+  const openIcon = document.getElementById("iconEyeOpen");
+  const shutIcon = document.getElementById("iconEyeShut");
+  if (!pwd || !btn) return;
+
+  function reflectVisibility() {
+    const visible = pwd.type === "text";
+    btn.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+    btn.setAttribute("aria-pressed", visible ? "true" : "false");
+    openIcon?.classList.toggle("hidden", visible);
+    shutIcon?.classList.toggle("hidden", !visible);
+  }
+
+  btn.addEventListener("click", () => {
+    pwd.type = pwd.type === "password" ? "text" : "password";
+    reflectVisibility();
+  });
+})();
+
 function setStatus(message, type = "") {
   authStatus.textContent = message;
   authStatus.className = `status ${type}`.trim();

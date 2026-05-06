@@ -3,11 +3,43 @@
   const statusText = document.getElementById("statusText");
   const loadingOverlay = document.getElementById("loadingOverlay");
   const generateBtn = document.getElementById("generateBtn");
+  const loaderTipEl = document.getElementById("loaderTip");
+
+  const LOADER_TIPS = [
+    "Mapping keywords to your experience…",
+    "Tailoring bullet points to the job description…",
+    "Scoring keyword overlap (ATS-style estimate)…",
+    "Structuring sections for clarity and impact…",
+    "Polishing phrasing — almost ready…",
+  ];
+
+  let loaderTipInterval = null;
+  let loaderTipIndex = 0;
 
   function setLoading(isLoading) {
     loadingOverlay.classList.toggle("hidden", !isLoading);
     loadingOverlay.setAttribute("aria-hidden", String(!isLoading));
     generateBtn.disabled = isLoading;
+
+    if (loaderTipEl) {
+      if (loaderTipInterval) {
+        clearInterval(loaderTipInterval);
+        loaderTipInterval = null;
+      }
+      if (isLoading) {
+        loaderTipIndex = 0;
+        loaderTipEl.textContent = LOADER_TIPS[0];
+        loaderTipEl.style.opacity = "1";
+        loaderTipInterval = setInterval(() => {
+          loaderTipIndex = (loaderTipIndex + 1) % LOADER_TIPS.length;
+          loaderTipEl.style.opacity = "0";
+          setTimeout(() => {
+            loaderTipEl.textContent = LOADER_TIPS[loaderTipIndex];
+            loaderTipEl.style.opacity = "1";
+          }, 200);
+        }, 2800);
+      }
+    }
   }
 
   function setStatus(message, type = "") {

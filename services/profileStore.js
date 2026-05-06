@@ -38,6 +38,7 @@ function getProfile(userId) {
     displayName: row?.displayName ?? "",
     headline: row?.headline ?? "",
     phone: row?.phone ?? "",
+    linkedinUrl: row?.linkedinUrl ?? "",
     updatedAt: row?.updatedAt ?? null,
   };
 }

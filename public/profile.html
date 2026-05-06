@@ -18,32 +18,50 @@
     <div class="bg-blur bg-blur-2"></div>
 
     <main class="page">
-      <section class="card">
+      <section class="card profile-card-wide">
         <header class="header">
           <div class="header-row">
-            <a class="back-link-inline" href="./index.html">← Home</a>
+            <a class="app-logo" href="./index.html" aria-label="AI Resume Studio — Home">
+              <span class="app-logo-mark" aria-hidden="true"></span>
+              <span class="app-logo-text">Resume<span class="app-logo-accent">AI</span></span>
+            </a>
             <div id="accountMount" class="account-mount hidden"></div>
           </div>
           <p class="chip">Your profile</p>
           <h1>Profile</h1>
-          <p class="subtitle">Saved locally on the server for your account (JSON file storage).</p>
+          <p class="subtitle">Your account email and saved contact details. Generated resumes are listed below.</p>
         </header>
 
-        <form id="profileForm" class="profile-form" autocomplete="on">
-          <div class="field">
-            <label for="displayName">Display name</label>
-            <input id="displayName" name="displayName" type="text" maxlength="120" placeholder="Your name" />
-          </div>
-          <div class="field">
-            <label for="headline">Professional headline</label>
-            <input id="headline" name="headline" type="text" maxlength="200" placeholder="e.g. Backend Engineer" />
-          </div>
+        <div class="profile-identity">
+          <p class="profile-identity-label">Signed in as</p>
+          <p id="profileEmail" class="profile-email">—</p>
+        </div>
+
+        <section class="profile-cvs" aria-labelledby="profileCvHeading">
+          <h2 id="profileCvHeading" class="profile-section-title">Your generated resumes</h2>
+          <ul id="profileCvList" class="profile-cv-list"></ul>
+          <p id="profileCvEmpty" class="profile-cv-empty hidden">
+            No resumes yet. Go to Home and generate your first tailored CV.
+          </p>
+        </section>
+
+        <form id="profileForm" class="profile-form profile-contact-form" autocomplete="on">
           <div class="field">
             <label for="phone">Phone</label>
-            <input id="phone" name="phone" type="text" maxlength="40" placeholder="Optional" />
+            <input id="phone" name="phone" type="tel" maxlength="40" placeholder="Optional" />
+          </div>
+          <div class="field">
+            <label for="linkedinUrl">LinkedIn URL</label>
+            <input
+              id="linkedinUrl"
+              name="linkedinUrl"
+              type="url"
+              maxlength="500"
+              placeholder="https://linkedin.com/in/your-profile"
+            />
           </div>
           <button type="submit" class="generate-btn">
-            <span class="btn-text">Save profile</span>
+            <span class="btn-text">Save contact details</span>
             <span class="btn-glow"></span>
           </button>
         </form>

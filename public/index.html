@@ -21,6 +21,10 @@
       <section class="card">
         <header class="header">
           <div class="header-row">
+            <a class="app-logo" href="./index.html" aria-label="AI Resume Studio — Home">
+              <span class="app-logo-mark" aria-hidden="true"></span>
+              <span class="app-logo-text">Resume<span class="app-logo-accent">AI</span></span>
+            </a>
             <span class="header-row-spacer"></span>
             <div id="accountMount" class="account-mount hidden"></div>
           </div>
@@ -64,9 +68,17 @@
     </main>
 
     <div id="loadingOverlay" class="loading-overlay hidden" aria-hidden="true">
-      <div class="loader-card">
-        <div class="loader"></div>
-        <p>Generating your resume...</p>
+      <div class="loader-showcase">
+        <div class="loader-orbit" aria-hidden="true">
+          <div class="loader-ring loader-ring-1"></div>
+          <div class="loader-ring loader-ring-2"></div>
+          <div class="loader-core"></div>
+        </div>
+        <p class="loader-title">Crafting your resume</p>
+        <p id="loaderTip" class="loader-tip">Mapping keywords to your experience…</p>
+        <div class="loader-lines" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
       </div>
     </div>
 
