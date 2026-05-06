@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#070b14" media="(prefers-color-scheme: dark)" />
     <title>Sign in — SN Algora AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,53 +16,13 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
-    <style>
-      .auth-tabs {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .auth-tab {
-        flex: 1;
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--muted);
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background 0.15s, color 0.15s;
-      }
-      .auth-tab.active {
-        background: rgba(110, 168, 254, 0.18);
-        border-color: rgba(110, 168, 254, 0.45);
-        color: var(--text);
-      }
-      .auth-form {
-        display: grid;
-        gap: 14px;
-        max-width: 420px;
-      }
-      .auth-actions {
-        margin-top: 8px;
-      }
-      .auth-footer {
-        margin-top: 18px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .auth-footer a {
-        color: var(--primary);
-      }
-    </style>
   </head>
   <body>
     <div class="bg-blur bg-blur-1"></div>
     <div class="bg-blur bg-blur-2"></div>
 
     <main class="page">
-      <section class="card" style="max-width: 480px; width: 100%">
+      <section class="card auth-card">
         <div class="auth-page-logo-row header-row">
           <a class="app-logo" href="./index.html" aria-label="SN Algora AI — Home">
             <span class="app-logo-mark" aria-hidden="true"></span>
