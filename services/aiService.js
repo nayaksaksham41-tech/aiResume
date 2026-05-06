@@ -242,7 +242,7 @@ function getAiConfig() {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
       "HTTP-Referer": process.env.OPENROUTER_HTTP_REFERER || "http://localhost:3000",
-      "X-Title": process.env.OPENROUTER_APP_NAME || "resume-generator-api",
+      "X-Title": process.env.OPENROUTER_APP_NAME || "SN Algora AI",
     },
   };
 }

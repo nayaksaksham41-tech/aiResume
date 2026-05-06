@@ -1,4 +1,4 @@
-# CVA — AI Resume Studio
+# CVA — SN Algora AI
 
 Express.js app: tailor resumes to a job description with AI, ATS-style score, PDF & Word export, accounts (JSON file DB), optional admin dashboard.
 
@@ -36,7 +36,7 @@ Copy from [`.env.example`](./.env.example). Never commit `.env` or API keys.
    ```bash
    git init
    git add .
-   git commit -m "Initial commit: AI resume studio"
+   git commit -m "Initial commit: SN Algora AI"
    ```
 
 3. Create a new empty repository on [GitHub](https://github.com/new) (no README/license if you already have files locally).
@@ -87,7 +87,7 @@ Good fits with free/low tiers: **Render**, **Railway**, **Fly.io** (cold starts 
    | `OPENROUTER_API_KEY` | your key |
    | `OPENROUTER_MODEL` | e.g. `openai/gpt-4o-mini` |
    | `OPENROUTER_HTTP_REFERER` | After deploy: `https://YOUR-SERVICE.onrender.com` (your exact URL) |
-   | `OPENROUTER_APP_NAME` | any label, e.g. `resume-api` |
+   | `OPENROUTER_APP_NAME` | any label, e.g. `SN Algora AI` |
 
    Copy anything else you need from [`.env.example`](./.env.example) (Groq, Gemini, `ADMIN_EMAIL`, etc.).
 

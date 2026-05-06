@@ -1,7 +1,7 @@
 {
   "name": "cva",
   "version": "1.0.0",
-  "description": "Express backend for AI-powered resume generation",
+  "description": "SN Algora AI — tailor resumes with AI",
   "main": "server.js",
   "scripts": {
     "build": "node scripts/vercel-build-verify.js",

@@ -992,6 +992,18 @@ input:focus {
   color: transparent;
 }
 
+@media (max-width: 520px) {
+  .app-logo {
+    font-size: 15px;
+    gap: 8px;
+  }
+
+  .app-logo-mark {
+    width: 32px;
+    height: 32px;
+  }
+}
+
 /* Auth password visibility */
 .password-field {
   position: relative;
