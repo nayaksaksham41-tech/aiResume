@@ -1,8 +1,9 @@
 const express = require("express");
 const { z } = require("zod");
 
-const { generateResumeJson } = require("../services/aiService");
+const { generateResumeJson, generateCareerExtras } = require("../services/aiService");
 const { buildResumeHtml } = require("../services/resumeHtmlService");
+const { buildInterviewGuideHtml } = require("../services/interviewGuideHtmlService");
 const { generatePdfBuffer } = require("../services/pdfService");
 const { generateDocxBuffer } = require("../services/docxService");
 const { computeAtsScore } = require("../services/atsScoreService");
@@ -31,7 +32,11 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
 
     await quotaService.assertCanGenerateResume(req.user);
 
-    const resumeJson = await generateResumeJson({ job_description, resume_text });
+    const [resumeJson, careerExtras] = await Promise.all([
+      generateResumeJson({ job_description, resume_text }),
+      generateCareerExtras({ job_description, resume_text }),
+    ]);
+
     const html = await buildResumeHtml(resumeJson);
 
     if (streamFormat === "pdf") {
@@ -52,12 +57,20 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
     }
 
     const atsScore = computeAtsScore(job_description, resumeJson);
+    const jdPreviewInterview =
+      String(job_description || "")
+        .slice(0, 480)
+        .replace(/\s+/g, " ")
+        .trim() + (String(job_description || "").length > 480 ? "…" : "");
+
     const sessionId = await sessionStore.createSession({
       resumeJson,
       html,
       job_description,
       resume_text,
       atsScore,
+      careerExtras,
+      interviewJdPreview: jdPreviewInterview,
     });
 
     let historyId = null;
@@ -69,6 +82,8 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
         job_description,
         resume_text,
         atsScore,
+        careerExtras,
+        interviewJdPreview: jdPreviewInterview,
       });
       historyId = meta.id;
     } catch (e) {
@@ -95,6 +110,7 @@ router.get("/resume-session/:sessionId", requireAuth, async (req, res, next) => 
     }
     res.status(200).json({
       atsScore: session.atsScore,
+      careerExtras: session.careerExtras || null,
       sessionId: req.params.sessionId,
     });
   } catch (error) {
@@ -130,6 +146,29 @@ router.get("/download/:sessionId/docx", requireAuth, async (req, res, next) => {
     );
     res.setHeader("Content-Disposition", 'attachment; filename="resume.docx"');
     res.status(200).send(docxBuffer);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/download/:sessionId/interview-pdf", requireAuth, async (req, res, next) => {
+  try {
+    const session = await sessionStore.getSession(req.params.sessionId);
+    if (!session) {
+      throw new AppError("Session expired or not found. Generate your resume again.", 404);
+    }
+    const extra = session.careerExtras;
+    if (!extra?.interviewQa?.length) {
+      throw new AppError("Interview guide not available for this session.", 404);
+    }
+    const guideHtml = buildInterviewGuideHtml({
+      jobDescriptionPreview: session.interviewJdPreview || "",
+      interviewQa: extra.interviewQa,
+    });
+    const pdfBuffer = await generatePdfBuffer(guideHtml);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="interview-guide-25-qa.pdf"');
+    res.status(200).send(pdfBuffer);
   } catch (error) {
     next(error);
   }

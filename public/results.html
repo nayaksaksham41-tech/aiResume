@@ -8,7 +8,7 @@
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
     <meta name="theme-color" content="#070b14" media="(prefers-color-scheme: dark)" />
-    <title>Your resume — SN Algora AI</title>
+    <title>Results — SN Algora AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -31,11 +31,11 @@
             </a>
             <div id="accountMount" class="account-mount hidden"></div>
           </div>
-          <p class="chip">Resume ready</p>
-          <h1>Download & ATS snapshot</h1>
+          <p class="chip">Your career pack</p>
+          <h1>Resume, letter, email & interview prep</h1>
           <p class="subtitle">
-            Your tailored resume is ready. Pick PDF or Word below. The ATS score is an estimate based on
-            keyword overlap with the job description you pasted.
+            Download your tailored resume (PDF or Word), copy your cover letter and HR email, and grab a
+            PDF of 25 interview Q&amp;A grounded in this job description.
           </p>
         </header>
 
@@ -56,19 +56,89 @@
         <div id="downloadGrid" class="download-grid">
           <article class="download-card">
             <div class="download-icon pdf-icon" aria-hidden="true">PDF</div>
-            <h2>PDF</h2>
+            <h2>Resume PDF</h2>
             <p class="download-desc">Best for applications and printing. Layout matches our preview template.</p>
             <button type="button" id="btnPdf" class="download-btn">Download PDF</button>
           </article>
           <article class="download-card">
             <div class="download-icon docx-icon" aria-hidden="true">W</div>
-            <h2>Word</h2>
+            <h2>Resume Word</h2>
             <p class="download-desc">
               Editable .docx — open in Microsoft Word or Google Docs and tweak wording anytime.
             </p>
             <button type="button" id="btnDocx" class="download-btn secondary">Download Word</button>
           </article>
         </div>
+
+        <p id="careerPackUnavailable" class="career-pack-unavailable hidden">
+          Cover letter, email &amp; interview guide were not saved for this item. Generate a fresh resume from
+          the home page for the full pack.
+        </p>
+
+        <section id="careerPack" class="career-pack hidden" aria-labelledby="careerPackHeading">
+          <h2 id="careerPackHeading" class="career-pack-heading">Cover letter &amp; outreach</h2>
+          <p class="career-pack-lead">
+            Copy and paste into your application or inbox. Replace bracket placeholders like
+            [Your Name] or [Company Name] before sending.
+          </p>
+
+          <div class="career-copy-grid">
+            <article class="copy-card">
+              <div class="copy-card-head">
+                <h3 class="copy-card-title">Cover letter</h3>
+                <button type="button" id="btnCopyCover" class="text-btn copy-inline-btn">
+                  Copy
+                </button>
+              </div>
+              <textarea
+                id="coverLetterOut"
+                class="copy-textarea"
+                readonly
+                rows="12"
+                spellcheck="false"
+                aria-label="Generated cover letter"
+              ></textarea>
+            </article>
+
+            <article class="copy-card">
+              <div class="copy-card-head">
+                <h3 class="copy-card-title">Email to HR</h3>
+                <div class="copy-email-actions">
+                  <button type="button" id="btnCopySubject" class="text-btn copy-inline-btn">Copy subject</button>
+                  <button type="button" id="btnCopyEmailBody" class="text-btn copy-inline-btn">Copy body</button>
+                  <button type="button" id="btnCopyEmailAll" class="text-btn copy-inline-btn">Copy both</button>
+                </div>
+              </div>
+              <label class="copy-label" for="hrEmailSubjectOut">Subject line</label>
+              <input
+                id="hrEmailSubjectOut"
+                type="text"
+                readonly
+                class="copy-single"
+                aria-label="Email subject line"
+              />
+              <label class="copy-label" for="hrEmailBodyOut">Email body</label>
+              <textarea
+                id="hrEmailBodyOut"
+                class="copy-textarea"
+                readonly
+                rows="10"
+                spellcheck="false"
+                aria-label="Email body for HR"
+              ></textarea>
+            </article>
+
+            <article class="download-card career-interview-card">
+              <div class="download-icon pdf-icon" aria-hidden="true">25</div>
+              <h2>Interview PDF</h2>
+              <p class="download-desc">
+                <strong>25</strong> interview questions with model answers generated for <em>this</em> job description
+                (not a live web search)—edit with your own stories before interviews.
+              </p>
+              <button type="button" id="btnInterviewPdf" class="download-btn">Download interview Q&amp;A (PDF)</button>
+            </article>
+          </div>
+        </section>
       </section>
     </main>
 

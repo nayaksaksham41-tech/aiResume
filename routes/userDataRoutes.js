@@ -10,6 +10,7 @@ const quotaService = require("../services/quotaService");
 const historyStore = require("../services/historyStore");
 const { generatePdfBuffer } = require("../services/pdfService");
 const { generateDocxBuffer } = require("../services/docxService");
+const { buildInterviewGuideHtml } = require("../services/interviewGuideHtmlService");
 
 const router = express.Router();
 
@@ -142,6 +143,25 @@ router.get("/history/:historyId/download/docx", requireAuth, async (req, res, ne
   }
 });
 
+router.get("/history/:historyId/download/interview-pdf", requireAuth, async (req, res, next) => {
+  try {
+    const full = await historyPayloadForRequest(req, req.params.historyId);
+    if (!full?.careerExtras?.interviewQa?.length) {
+      throw new AppError("Interview guide not available for this history entry.", 404);
+    }
+    const guideHtml = buildInterviewGuideHtml({
+      jobDescriptionPreview: full.interviewJdPreview || full.jdPreview || "",
+      interviewQa: full.careerExtras.interviewQa,
+    });
+    const pdfBuffer = await generatePdfBuffer(guideHtml);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="interview-guide-25-qa.pdf"');
+    res.status(200).send(pdfBuffer);
+  } catch (e) {
+    next(e);
+  }
+});
+
 router.get("/history/:historyId", requireAuth, async (req, res, next) => {
   try {
     const full = await historyPayloadForRequest(req, req.params.historyId);
@@ -154,6 +174,8 @@ router.get("/history/:historyId", requireAuth, async (req, res, next) => {
       resumeTitle: full.resumeTitle,
       jdPreview: full.jdPreview,
       atsScore: full.atsScore,
+      careerExtras: full.careerExtras || null,
+      interviewJdPreview: full.interviewJdPreview || null,
     });
   } catch (e) {
     next(e);

@@ -98,10 +98,10 @@
     }
 
     setLoading(true);
-    setStatus("Tailoring your resume to the job description...", "");
+    setStatus("Drafting resume, cover letter, HR email & interview guide (this can take a couple of minutes)…", "");
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 180000);
+    const timeoutId = setTimeout(() => controller.abort(), 300000);
 
     try {
       const response = await fetch(endpoint, {
@@ -146,7 +146,7 @@
     } catch (error) {
       if (error.name === "AbortError") {
         setStatus(
-          "Request timed out (3 min). Your resume or job description may be very long — shorten slightly and try again.",
+          "Request timed out (5 min). The model may still be drafting your resume, cover letter, and interview guide — try again with a slightly shorter JD or resume, or retry.",
           "error",
         );
       } else if (error instanceof TypeError) {

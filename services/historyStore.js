@@ -93,7 +93,16 @@ async function saveIndex(data) {
  * Persist a generated resume for history / re-download after session TTL.
  * On Redis: index + per-item keys (shared across Vercel instances). Locally: filesystem.
  */
-async function appendEntry({ userId, resumeJson, html, job_description, resume_text, atsScore }) {
+async function appendEntry({
+  userId,
+  resumeJson,
+  html,
+  job_description,
+  resume_text,
+  atsScore,
+  careerExtras,
+  interviewJdPreview,
+}) {
   const id = crypto.randomUUID();
   const rawJd = String(job_description || "");
   const jdPreview =
@@ -116,6 +125,8 @@ async function appendEntry({ userId, resumeJson, html, job_description, resume_t
     job_description,
     resume_text,
     atsScore,
+    careerExtras,
+    interviewJdPreview,
   };
 
   const redis = getRedisClient();

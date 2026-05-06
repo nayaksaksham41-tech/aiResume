@@ -364,4 +364,151 @@ async function generateResumeJson({ job_description, resume_text }) {
   throw new AppError("Failed to generate resume after retries", 502);
 }
 
-module.exports = { generateResumeJson };
+/* --- Career extras: cover letter, HR email, interview Q&A (parallel to resume) --- */
+
+const qaPairSchema = z.object({
+  question: z.string().trim().min(4),
+  answer: z.string().trim().min(16),
+});
+
+const careerExtrasSchema = z.object({
+  coverLetter: z.string().trim().min(120),
+  hrEmailSubject: z.string().trim().min(4),
+  hrEmailBody: z.string().trim().min(80),
+  interviewQa: z.array(qaPairSchema).length(25),
+});
+
+const CAREER_EXTRAS_SYSTEM =
+  "You are an expert careers coach for job seekers. Produce truthful, compelling application copy grounded in the candidate's resume facts—never invent employers, dates, degrees, or skills. Output strict JSON only (no markdown, no commentary).";
+
+const CAREER_EXTRAS_USER = `
+Using the JOB DESCRIPTION and CANDIDATE RESUME TEXT below, return ONE JSON object with exactly these keys:
+
+1) coverLetter — 3–4 short paragraphs (plain text with \\n\\n between paragraphs). Tailored to THIS role and company themes from the JD. Highlight 2–3 concrete achievements from the resume (metrics when present). Warm, confident, not generic fluff.
+
+2) hrEmailSubject — one line, professional, specific to this application (avoid "application for position").
+
+3) hrEmailBody — a polished outreach email (plain text, use \\n for line breaks). Include clear placeholders where the applicant must personalize: exactly use these bracket tokens where appropriate: [Your Name], [Your Phone], [Your Email], [Company Name], [Role Title], [Recruiter Name if known], [Job ID or link if any]. The body should be ready to send after the user replaces placeholders; do not use real PII from the resume inside the body except what fits naturally in sentences (optional). Keep under ~220 words.
+
+4) interviewQa — array of EXACTLY 25 objects, each { "question": "...", "answer": "..." }.
+   - Questions must be the most useful interview questions for THIS job description (mix: behavioral, role-specific technical/functional, company/scenario, seniority-appropriate).
+   - Answers must be STAR-style when relevant, grounded in the resume; if the resume lacks detail for a topic, say how to frame honestly and what to prepare, without inventing false experience.
+   - Order from high-impact / likely-first to more specialized.
+
+Job Description:
+{{JOB_DESCRIPTION}}
+
+Candidate Resume Text:
+{{RESUME_TEXT}}
+
+Return JSON shape exactly:
+{
+  "coverLetter": "string",
+  "hrEmailSubject": "string",
+  "hrEmailBody": "string",
+  "interviewQa": [ { "question": "string", "answer": "string" } ]
+}
+`;
+
+const CAREER_EXTRAS_RETRY = `
+RETRY: previous output failed validation. Fix and return valid JSON only.
+- coverLetter at least ~120 characters, multiple paragraphs separated by \\n\\n.
+- hrEmailBody at least ~80 characters with [Your Name] [Company Name] [Role Title] placeholders.
+- interviewQa must be exactly 25 {question, answer} pairs; answers substantive (not one-liners).
+`;
+
+function parseCareerExtrasJson(rawContent) {
+  const cleaned = stripCodeFences(rawContent);
+  try {
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (_jsonError) {
+      const extracted = extractJsonObject(cleaned);
+      if (!extracted) {
+        throw new AppError("Failed to parse career extras JSON response", 502);
+      }
+      parsed = JSON.parse(extracted);
+    }
+    if (typeof parsed === "string") {
+      parsed = JSON.parse(parsed);
+    }
+    const validated = careerExtrasSchema.safeParse(parsed);
+    if (!validated.success) {
+      const detail = validated.error?.issues?.[0]?.message || "validation failed";
+      throw new AppError(`Career extras JSON invalid: ${detail}`, 502);
+    }
+    return validated.data;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("Failed to parse career extras JSON response", 502);
+  }
+}
+
+async function generateCareerExtras({ job_description, resume_text }) {
+  const config = getAiConfig();
+  const baseUser = CAREER_EXTRAS_USER.replace("{{JOB_DESCRIPTION}}", job_description).replace(
+    "{{RESUME_TEXT}}",
+    resume_text,
+  );
+
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const suffix = attempt === 1 ? "" : `\n${CAREER_EXTRAS_RETRY}`;
+    const userPrompt = `${baseUser}${suffix}`;
+
+    try {
+      const response = await axios.post(
+        config.url,
+        {
+          model: config.model,
+          temperature: attempt === 1 ? 0.42 : 0.35,
+          messages: [
+            { role: "system", content: CAREER_EXTRAS_SYSTEM },
+            { role: "user", content: userPrompt },
+          ],
+          response_format: { type: "json_object" },
+          max_tokens: 14000,
+        },
+        { headers: config.headers, timeout: 180000 },
+      );
+
+      const content = extractContent(response.data);
+      if (!content) {
+        throw new AppError("Empty career extras response from AI provider", 502);
+      }
+      return parseCareerExtrasJson(content);
+    } catch (error) {
+      lastError = error;
+      const retryable =
+        attempt < 3 &&
+        error instanceof AppError &&
+        error.statusCode === 502 &&
+        (error.message.includes("invalid") ||
+          error.message.includes("parse") ||
+          error.message.includes("Failed to parse"));
+
+      if (!retryable) {
+        if (error instanceof AppError) {
+          throw error;
+        }
+        const providerMessage =
+          error.response?.data?.error?.message ||
+          error.response?.data?.message ||
+          error.message ||
+          "AI provider request failed";
+        throw new AppError(`Career extras AI error: ${providerMessage}`, 502);
+      }
+    }
+  }
+
+  if (lastError instanceof AppError) {
+    throw lastError;
+  }
+  throw new AppError("Failed to generate career extras after retries", 502);
+}
+
+module.exports = { generateResumeJson, generateCareerExtras };

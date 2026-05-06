@@ -784,6 +784,122 @@ input:focus {
   display: none;
 }
 
+/* Career pack: cover letter, HR email, interview PDF */
+.career-pack {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.career-pack-heading {
+  margin: 0 0 8px;
+  font-size: clamp(17px, 4vw, 20px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.career-pack-lead {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 70ch;
+}
+
+.career-pack-unavailable {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.career-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.copy-card {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(8, 14, 26, 0.55);
+  display: grid;
+  gap: 10px;
+}
+
+.copy-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.copy-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.copy-email-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.copy-inline-btn {
+  padding: 8px 12px;
+  min-height: 40px;
+  font-size: 13px;
+}
+
+.copy-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.copy-single {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--text);
+  background: rgba(6, 10, 18, 0.72);
+}
+
+.copy-textarea {
+  width: 100%;
+  min-height: 160px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text);
+  background: rgba(6, 10, 18, 0.72);
+  resize: vertical;
+}
+
+.career-interview-card {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 720px) {
+  .career-copy-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .download-card {
   padding: 22px;
   border-radius: 16px;
