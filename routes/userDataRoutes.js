@@ -41,13 +41,17 @@ router.get("/subscription", requireAuth, (req, res) => {
   res.json({ subscription });
 });
 
-router.get("/history", requireAuth, (req, res) => {
-  const entries = historyStore.listForUser(req.user.id);
-  res.json({ entries });
+router.get("/history", requireAuth, async (req, res, next) => {
+  try {
+    const entries = await historyStore.listForUser(req.user.id);
+    res.json({ entries });
+  } catch (e) {
+    next(e);
+  }
 });
 
-function historyPayloadForRequest(req, historyId) {
-  const meta = historyStore.findMetaByHistoryId(historyId);
+async function historyPayloadForRequest(req, historyId) {
+  const meta = await historyStore.findMetaByHistoryId(historyId);
   if (!meta) return null;
   if (meta.userId !== req.user.id && !isAdminEmail(req.user.email)) return null;
   return historyStore.readPayloadByHistoryId(historyId);
@@ -55,7 +59,7 @@ function historyPayloadForRequest(req, historyId) {
 
 router.get("/history/:historyId/download/pdf", requireAuth, async (req, res, next) => {
   try {
-    const full = historyPayloadForRequest(req, req.params.historyId);
+    const full = await historyPayloadForRequest(req, req.params.historyId);
     if (!full?.html) {
       throw new AppError("History entry not found.", 404);
     }
@@ -70,7 +74,7 @@ router.get("/history/:historyId/download/pdf", requireAuth, async (req, res, nex
 
 router.get("/history/:historyId/download/docx", requireAuth, async (req, res, next) => {
   try {
-    const full = historyPayloadForRequest(req, req.params.historyId);
+    const full = await historyPayloadForRequest(req, req.params.historyId);
     if (!full?.resumeJson) {
       throw new AppError("History entry not found.", 404);
     }
@@ -86,9 +90,9 @@ router.get("/history/:historyId/download/docx", requireAuth, async (req, res, ne
   }
 });
 
-router.get("/history/:historyId", requireAuth, (req, res, next) => {
+router.get("/history/:historyId", requireAuth, async (req, res, next) => {
   try {
-    const full = historyPayloadForRequest(req, req.params.historyId);
+    const full = await historyPayloadForRequest(req, req.params.historyId);
     if (!full) {
       throw new AppError("History entry not found.", 404);
     }

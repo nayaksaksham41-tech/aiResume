@@ -12,7 +12,7 @@ router.use(requireAuth);
 router.use(requireAdmin);
 
 router.get("/users", async (_req, res) => {
-  const counts = historyStore.resumeCountsByUser();
+  const counts = await historyStore.resumeCountsByUser();
   const users = (await userStore.listUsers()).map((u) => ({
     ...u,
     resumeCount: counts[u.id] ?? 0,
@@ -27,7 +27,7 @@ router.get("/users/:userId/history", async (req, res, next) => {
     if (!target) {
       throw new AppError("User not found.", 404);
     }
-    const entries = historyStore.listForUser(req.params.userId);
+    const entries = await historyStore.listForUser(req.params.userId);
     res.json({
       user: { id: target.id, email: target.email, createdAt: target.createdAt },
       entries,

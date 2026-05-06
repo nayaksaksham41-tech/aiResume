@@ -57,7 +57,7 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
 
     let historyId = null;
     try {
-      const meta = historyStore.appendEntry({
+      const meta = await historyStore.appendEntry({
         userId: req.user.id,
         resumeJson,
         html,
