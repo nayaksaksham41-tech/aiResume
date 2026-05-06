@@ -43,7 +43,18 @@ router.post("/signup", (req, res, next) => {
 
     const passwordHash = bcrypt.hashSync(password, 12);
     const user = userStore.createUser({ email, passwordHash });
-    const token = signToken(user);
+    let token;
+    try {
+      token = signToken(user);
+    } catch (e) {
+      if (String(e?.message || "").includes("JWT_SECRET")) {
+        throw new AppError(
+          "Server auth is not configured. Set JWT_SECRET in deployment environment.",
+          500,
+        );
+      }
+      throw e;
+    }
     res.cookie("auth_token", token, authCookieOptions());
     res.status(201).json({
       user: publicUser(user),
@@ -64,11 +75,31 @@ router.post("/login", (req, res, next) => {
     const { password } = parsed.data;
 
     const row = userStore.findByEmail(email);
-    if (!row || !bcrypt.compareSync(password, row.passwordHash)) {
+    let passwordMatches = false;
+    if (row && typeof row.passwordHash === "string" && row.passwordHash.length > 0) {
+      try {
+        passwordMatches = bcrypt.compareSync(password, row.passwordHash);
+      } catch (_e) {
+        passwordMatches = false;
+      }
+    }
+
+    if (!row || !passwordMatches) {
       throw new AppError("Incorrect email or password.", 401);
     }
 
-    const token = signToken({ id: row.id, email: row.email });
+    let token;
+    try {
+      token = signToken({ id: row.id, email: row.email });
+    } catch (e) {
+      if (String(e?.message || "").includes("JWT_SECRET")) {
+        throw new AppError(
+          "Server auth is not configured. Set JWT_SECRET in deployment environment.",
+          500,
+        );
+      }
+      throw e;
+    }
     res.cookie("auth_token", token, authCookieOptions());
     res.status(200).json({
       user: publicUser(row),
