@@ -3,20 +3,9 @@ const path = require("path");
 const crypto = require("crypto");
 
 const { getDataRoot } = require("./dataRoot");
-const { Redis } = require("@upstash/redis");
+const { getRedisClient } = require("./redisClient");
 
 const USERS_CACHE_KEY = "cva:users:v1";
-
-let redisClient = null;
-
-function getRedisClient() {
-  if (redisClient) return redisClient;
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
-  redisClient = new Redis({ url, token });
-  return redisClient;
-}
 
 function usersPath() {
   return path.join(getDataRoot(), "users.json");

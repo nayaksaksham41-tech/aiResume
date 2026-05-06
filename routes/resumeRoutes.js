@@ -47,7 +47,7 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
     }
 
     const atsScore = computeAtsScore(job_description, resumeJson);
-    const sessionId = sessionStore.createSession({
+    const sessionId = await sessionStore.createSession({
       resumeJson,
       html,
       job_description,
@@ -80,9 +80,9 @@ router.post("/generate-resume", requireAuth, async (req, res, next) => {
   }
 });
 
-router.get("/resume-session/:sessionId", requireAuth, (req, res, next) => {
+router.get("/resume-session/:sessionId", requireAuth, async (req, res, next) => {
   try {
-    const session = sessionStore.getSession(req.params.sessionId);
+    const session = await sessionStore.getSession(req.params.sessionId);
     if (!session) {
       throw new AppError("Session expired or not found. Generate your resume again.", 404);
     }
@@ -97,7 +97,7 @@ router.get("/resume-session/:sessionId", requireAuth, (req, res, next) => {
 
 router.get("/download/:sessionId/pdf", requireAuth, async (req, res, next) => {
   try {
-    const session = sessionStore.getSession(req.params.sessionId);
+    const session = await sessionStore.getSession(req.params.sessionId);
     if (!session) {
       throw new AppError("Session expired or not found. Generate your resume again.", 404);
     }
@@ -112,7 +112,7 @@ router.get("/download/:sessionId/pdf", requireAuth, async (req, res, next) => {
 
 router.get("/download/:sessionId/docx", requireAuth, async (req, res, next) => {
   try {
-    const session = sessionStore.getSession(req.params.sessionId);
+    const session = await sessionStore.getSession(req.params.sessionId);
     if (!session) {
       throw new AppError("Session expired or not found. Generate your resume again.", 404);
     }

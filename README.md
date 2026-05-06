@@ -115,7 +115,7 @@ This repo targets Vercel’s **native Express** integration: export **`server.js
 2. **Install Command** (same **Build and Deployment** page): use **`npm install --omit=dev`** so Vercel skips the optional **`puppeteer`** devDependency and keeps the install small. (Local development should still run plain **`npm install`** so `puppeteer` is available on Windows/Mac.)
 3. **Build Command:** **`npm run build`** (already set in `package.json`).
 4. **Output Directory:** leave empty (not a static export).
-5. **Environment variables** — same as production (`NODE_ENV`, `JWT_SECRET`, `OPENROUTER_*`, `PUPPETEER_NO_SANDBOX=true`, …). For persistent users on Vercel, add Upstash Redis integration envs: **`UPSTASH_REDIS_REST_URL`** and **`UPSTASH_REDIS_REST_TOKEN`**. Vercel sets **`VERCEL=1`** automatically.
+5. **Environment variables** — same as production (`NODE_ENV`, `JWT_SECRET`, `OPENROUTER_*`, `PUPPETEER_NO_SANDBOX=true`, …). On Vercel, add Upstash Redis: **`UPSTASH_REDIS_REST_URL`** and **`UPSTASH_REDIS_REST_TOKEN`**. Redis stores **registered users** and **resume generation sessions** (about 30 minutes TTL) across serverless instances; without it, `/tmp` sessions break when the next request hits a different instance. Vercel sets **`VERCEL=1`** automatically.
 
 **Important limitations:**
 
