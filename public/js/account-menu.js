@@ -6,9 +6,12 @@
   const mount = document.getElementById("accountMount");
   if (!mount || window.location.protocol === "file:") return;
 
+  /** Set true with `profilePageEnabled` in `profile.html` to restore Profile. */
+  const PROFILE_NAV_ENABLED = false;
+
   const MENU = [
     { label: "Home", href: "/" },
-    { label: "Profile", href: "/profile.html" },
+    ...(PROFILE_NAV_ENABLED ? [{ label: "Profile", href: "/profile.html" }] : []),
     { label: "History (resumes created)", href: "/history.html" },
     { label: "Subscription", href: "/subscription.html" },
     { type: "logout", label: "Log out" },
