@@ -371,11 +371,28 @@ const qaPairSchema = z.object({
   answer: z.string().trim().min(16),
 });
 
-const careerExtrasSchema = z.object({
+function coerceInterviewQaRows(raw) {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const question = String(row.question ?? row.q ?? "").trim();
+      const answer = String(row.answer ?? row.a ?? "").trim();
+      if (question.length < 4 || answer.length < 16) return null;
+      return { question, answer };
+    })
+    .filter(Boolean);
+}
+
+/** Model often truncates before 25 pairs — coerce, then pad to exactly 25. */
+const careerExtrasLooseSchema = z.object({
   coverLetter: z.string().trim().min(120),
   hrEmailSubject: z.string().trim().min(4),
   hrEmailBody: z.string().trim().min(80),
-  interviewQa: z.array(qaPairSchema).length(25),
+  interviewQa: z.preprocess(
+    (v) => coerceInterviewQaRows(v),
+    z.array(qaPairSchema).max(50),
+  ),
 });
 
 const CAREER_EXTRAS_SYSTEM =
@@ -390,7 +407,7 @@ Using the JOB DESCRIPTION and CANDIDATE RESUME TEXT below, return ONE JSON objec
 
 3) hrEmailBody — a polished outreach email (plain text, use \\n for line breaks). Include clear placeholders where the applicant must personalize: exactly use these bracket tokens where appropriate: [Your Name], [Your Phone], [Your Email], [Company Name], [Role Title], [Recruiter Name if known], [Job ID or link if any]. The body should be ready to send after the user replaces placeholders; do not use real PII from the resume inside the body except what fits naturally in sentences (optional). Keep under ~220 words.
 
-4) interviewQa — array of EXACTLY 25 objects, each { "question": "...", "answer": "..." }.
+4) interviewQa — array of 20–25 objects, each { "question": "...", "answer": "..." } (aim for 25; if you run out of space, return at least 20 complete pairs—do not stop mid-pair).
    - Questions must be the most useful interview questions for THIS job description (mix: behavioral, role-specific technical/functional, company/scenario, seniority-appropriate).
    - Answers must be STAR-style when relevant, grounded in the resume; if the resume lacks detail for a topic, say how to frame honestly and what to prepare, without inventing false experience.
    - Order from high-impact / likely-first to more specialized.
@@ -414,10 +431,125 @@ const CAREER_EXTRAS_RETRY = `
 RETRY: previous output failed validation. Fix and return valid JSON only.
 - coverLetter at least ~120 characters, multiple paragraphs separated by \\n\\n.
 - hrEmailBody at least ~80 characters with [Your Name] [Company Name] [Role Title] placeholders.
-- interviewQa must be exactly 25 {question, answer} pairs; answers substantive (not one-liners).
+- interviewQa: return AT LEAST 20 {question, answer} pairs (aim for 25). Each answer must be substantive (2–6 sentences). If you cannot finish 25, provide as many complete pairs as possible (minimum 20).
 `;
 
-function parseCareerExtrasJson(rawContent) {
+/** Used when the model returns fewer than 25 Q&A pairs (token limit / truncation). */
+const INTERVIEW_PAD_FALLBACKS = [
+  {
+    question: "Walk me through your background and why this role is the right next step.",
+    answer:
+      "Summarize 2–3 relevant roles, one headline achievement per stop, then tie your strengths to the JD’s core responsibilities. Keep it under ~90 seconds spoken.",
+  },
+  {
+    question: "What interests you about this company and this specific opening?",
+    answer:
+      "Mention something concrete from the posting or company (product, market, tech stack, mission). Avoid generic praise; connect to how you can contribute in the first 90 days.",
+  },
+  {
+    question: "Describe a difficult technical or delivery problem you solved. What was your process?",
+    answer:
+      "Use STAR: context, constraints, options you considered, what you implemented, metrics or qualitative outcome, and one lesson you’d apply here.",
+  },
+  {
+    question: "Tell me about a time you disagreed with a teammate or stakeholder. How did you resolve it?",
+    answer:
+      "Show empathy, clarity, and outcome focus: what you heard, how you aligned on goals, the compromise or data you used, and the result for users or the business.",
+  },
+  {
+    question: "How do you prioritize when everything is urgent?",
+    answer:
+      "Explain your framework: impact vs effort, deadlines, stakeholder communication, and when you escalate. Give one real example from your resume if possible.",
+  },
+  {
+    question: "What are your strengths relevant to this role, and what are you actively improving?",
+    answer:
+      "Pair each strength with proof from experience. For growth areas, show self-awareness and concrete steps (courses, mentorship, practice) without underselling fit.",
+  },
+  {
+    question: "Describe your experience with the tools or stack mentioned in the job description.",
+    answer:
+      "Be precise about depth (years, scope). For gaps, say how you’ve ramped on similar tools quickly and what you’d do in the first month in this role.",
+  },
+  {
+    question: "How do you ensure quality when shipping quickly?",
+    answer:
+      "Cover testing strategy, code/design review habits, monitoring, and balancing trade-offs. Mention a time you caught or prevented a production issue.",
+  },
+  {
+    question: "Tell me about a time you had to learn something new under time pressure.",
+    answer:
+      "Show structured learning: resources, who you asked for help, how you validated understanding, and the outcome. Honesty beats exaggeration.",
+  },
+  {
+    question: "How do you handle ambiguous requirements?",
+    answer:
+      "Describe clarifying questions, writing assumptions, prototyping, and syncing with stakeholders early. Tie to a situation where ambiguity was high.",
+  },
+  {
+    question: "Where do you see yourself in 2–3 years, and how does this role fit?",
+    answer:
+      "Anchor on growth inside the craft (scope, leadership, domain depth) rather than titles alone. Show enthusiasm for problems this team solves.",
+  },
+  {
+    question: "Why are you leaving / why did you leave your last role?",
+    answer:
+      "Stay factual and forward-looking: seeking growth, better alignment, relocation, etc. Never badmouth; pivot to what you want next.",
+  },
+  {
+    question: "What questions do you have for us?",
+    answer:
+      "Prepare 4–6 thoughtful questions: team priorities, success metrics in year one, tech/process choices, collaboration model, and challenges they’re solving now.",
+  },
+  {
+    question: "How do you collaborate with cross-functional partners (product, design, ops)?",
+    answer:
+      "Give cadence (standups, RFCs), clarity in written updates, and an example of resolving a misalignment early.",
+  },
+  {
+    question: "Describe a production incident or critical bug you handled.",
+    answer:
+      "Cover detection, triage, mitigation, root cause, prevention (runbooks, tests, alerts). Emphasize calm communication during pressure.",
+  },
+  {
+    question: "How do you stay current with industry or technology changes?",
+    answer:
+      "Name newsletters, communities, side projects, or internal guilds—show continuous learning without sounding scattered.",
+  },
+];
+
+function normalizeInterviewQaToCount(items, jobDescription, target = 25) {
+  const jdHint = String(jobDescription || "")
+    .slice(0, 200)
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const cleaned = (Array.isArray(items) ? items : [])
+    .filter((row) => row && typeof row.question === "string" && typeof row.answer === "string")
+    .map((row) => ({
+      question: row.question.trim(),
+      answer: row.answer.trim(),
+    }))
+    .filter((row) => row.question.length >= 4 && row.answer.length >= 16);
+
+  const out = cleaned.slice(0, target);
+  let padIdx = 0;
+  while (out.length < target) {
+    const template =
+      INTERVIEW_PAD_FALLBACKS[padIdx % INTERVIEW_PAD_FALLBACKS.length];
+    padIdx += 1;
+    const suffix = out.length + 1;
+    out.push({
+      question: `${template.question} (Prep ${suffix}/${target})`,
+      answer: jdHint
+        ? `${template.answer} Relate your answer to themes from this posting where truthful: "${jdHint}${jdHint.length >= 200 ? "…" : ""}"`
+        : template.answer,
+    });
+  }
+  return out;
+}
+
+function parseCareerExtrasJson(rawContent, jobDescriptionForPad = "") {
   const cleaned = stripCodeFences(rawContent);
   try {
     let parsed;
@@ -433,12 +565,18 @@ function parseCareerExtrasJson(rawContent) {
     if (typeof parsed === "string") {
       parsed = JSON.parse(parsed);
     }
-    const validated = careerExtrasSchema.safeParse(parsed);
+    const validated = careerExtrasLooseSchema.safeParse(parsed);
     if (!validated.success) {
       const detail = validated.error?.issues?.[0]?.message || "validation failed";
       throw new AppError(`Career extras JSON invalid: ${detail}`, 502);
     }
-    return validated.data;
+    const data = validated.data;
+    const interviewQa = normalizeInterviewQaToCount(
+      data.interviewQa,
+      jobDescriptionForPad,
+      25,
+    );
+    return { ...data, interviewQa };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -471,7 +609,7 @@ async function generateCareerExtras({ job_description, resume_text }) {
             { role: "user", content: userPrompt },
           ],
           response_format: { type: "json_object" },
-          max_tokens: 14000,
+          max_tokens: 20000,
         },
         { headers: config.headers, timeout: 180000 },
       );
@@ -480,7 +618,7 @@ async function generateCareerExtras({ job_description, resume_text }) {
       if (!content) {
         throw new AppError("Empty career extras response from AI provider", 502);
       }
-      return parseCareerExtrasJson(content);
+      return parseCareerExtrasJson(content, job_description);
     } catch (error) {
       lastError = error;
       const retryable =
